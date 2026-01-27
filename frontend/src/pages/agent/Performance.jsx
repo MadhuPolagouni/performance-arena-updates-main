@@ -506,7 +506,7 @@ const Performance = () => {
         >
           <GlassPanel>
             <div className="p-5">
-              <div className="flex flex-wrap items-center justify-between gap-4 mb-5">
+              <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
                     <Activity className="w-5 h-5 text-primary" />
@@ -516,13 +516,13 @@ const Performance = () => {
                   </h3>
                 </div>
                 <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/30 border border-border/50">
-                  {["All", "QA", "Revenue", "AHT", "NPS"].map((filter) => (
+                  {["Week", "Month"].map((filter) => (
                     <button
                       key={filter}
-                      onClick={() => setActiveMetricFilter(filter)}
+                      onClick={() => setTimeFilter(filter.toLowerCase())}
                       className={cn(
                         "px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
-                        activeMetricFilter === filter
+                        timeFilter === filter.toLowerCase()
                           ? "bg-primary/20 text-primary"
                           : "text-muted-foreground hover:text-foreground"
                       )}
@@ -533,43 +533,127 @@ const Performance = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                {filteredLogs.map((log, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 + index * 0.05 }}
-                    className={cn(
-                      "flex items-center justify-between p-3 rounded-lg border transition-all hover:border-primary/30",
-                      "bg-muted/20 border-border/50"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-3 h-3 rounded-full",
-                        log.type === 'positive' 
-                          ? 'bg-success shadow-[0_0_8px_hsl(var(--success)/0.5)]' 
-                          : 'bg-destructive shadow-[0_0_8px_hsl(var(--destructive)/0.5)]'
-                      )} />
-                      <span className="font-medium text-foreground">{log.metric}</span>
-                      <span className="px-2 py-0.5 rounded bg-muted/50 text-muted-foreground text-xs border border-border/50">
-                        {log.category}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-5">
-                      <span className={cn(
-                        "font-bold text-lg",
-                        log.type === 'positive' ? 'text-success' : 'text-destructive'
-                      )}>
-                        {log.points} PTS
-                      </span>
-                      <span className="text-sm text-muted-foreground min-w-[90px] text-right">
-                        {log.time}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
+              {/* KPI Graphs Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* New Revenue */}
+                <div className="bg-muted/20 rounded-lg border border-border/50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <DollarSign className="w-4 h-4 text-accent" />
+                    <h4 className="font-semibold text-sm text-foreground">New Revenue</h4>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={data.kpiData?.newRevenue || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                        cursor={{ fill: "hsl(var(--primary) / 0.1)" }}
+                      />
+                      <Bar dataKey="value" fill="hsl(var(--accent))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* AHT */}
+                <div className="bg-muted/20 rounded-lg border border-border/50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Clock className="w-4 h-4 text-primary" />
+                    <h4 className="font-semibold text-sm text-foreground">Average Handle Time</h4>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={data.kpiData?.aht || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                        cursor={{ fill: "hsl(var(--primary) / 0.1)" }}
+                      />
+                      <Bar dataKey="value" fill="hsl(var(--primary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* QA Score */}
+                <div className="bg-muted/20 rounded-lg border border-border/50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <CheckCircle className="w-4 h-4 text-success" />
+                    <h4 className="font-semibold text-sm text-foreground">QA Score</h4>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={data.kpiData?.qaScore || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                        cursor={{ fill: "hsl(var(--primary) / 0.1)" }}
+                      />
+                      <Bar dataKey="value" fill="hsl(var(--success))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* NRPC */}
+                <div className="bg-muted/20 rounded-lg border border-border/50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <TrendingUp className="w-4 h-4 text-secondary" />
+                    <h4 className="font-semibold text-sm text-foreground">NRPC</h4>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={data.kpiData?.nrpc || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                        cursor={{ fill: "hsl(var(--primary) / 0.1)" }}
+                      />
+                      <Bar dataKey="value" fill="hsl(var(--secondary))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* New Conversion % */}
+                <div className="bg-muted/20 rounded-lg border border-border/50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Target className="w-4 h-4 text-warning" />
+                    <h4 className="font-semibold text-sm text-foreground">New Conversion %</h4>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={data.kpiData?.newConversionPct || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                        cursor={{ fill: "hsl(var(--primary) / 0.1)" }}
+                      />
+                      <Bar dataKey="value" fill="hsl(var(--warning))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* NPS */}
+                <div className="bg-muted/20 rounded-lg border border-border/50 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Heart className="w-4 h-4 text-destructive" />
+                    <h4 className="font-semibold text-sm text-foreground">Net Promoter Score</h4>
+                  </div>
+                  <ResponsiveContainer width="100%" height={120}>
+                    <BarChart data={data.kpiData?.nps || []}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.2)" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 10 }} stroke="hsl(var(--muted-foreground))" />
+                      <Tooltip 
+                        contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))" }}
+                        cursor={{ fill: "hsl(var(--primary) / 0.1)" }}
+                      />
+                      <Bar dataKey="value" fill="hsl(var(--destructive))" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
               </div>
             </div>
           </GlassPanel>
