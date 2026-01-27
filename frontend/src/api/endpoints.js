@@ -19,6 +19,10 @@ export const ENDPOINTS = {
     spinWheel: (agentId) => `/agent/${agentId}/playzone/spin`,
     claimSpinReward: (agentId) => `/agent/${agentId}/playzone/spin/claim`,
     acceptChallenge: (agentId, challengeId) => `/agent/${agentId}/playzone/challenge/${challengeId}/accept`,
+    historicalPerformance: (agentId) => `/agent/${agentId}/historical-performance`,
+    dailyPerformanceScores: (agentId) => `/agent/${agentId}/daily-performance-scores`,
+    weeklyPointTrajectory: (agentId) => `/agent/${agentId}/weekly-point-trajectory`,
+    pointsActivityLog: (agentId) => `/agent/${agentId}/points-activity-log`,
   },
 
   // Manager Endpoints

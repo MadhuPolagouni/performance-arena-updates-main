@@ -18,14 +18,14 @@ import { cn } from "@/lib/utils";
 
 const SpinWheelBanner = ({ 
   isUnlocked = false,
-  tokensEarned = 65,
-  tokensNeeded = 100,
+  pointsEarned = 65,
+  pointsNeeded = 100,
   nextSpinIn = null,
   onOpenWheel,
   onViewChallenges,
 }) => {
-  const progress = Math.min((tokensEarned / tokensNeeded) * 100, 100);
-  const canUnlock = tokensEarned >= tokensNeeded;
+  const progress = Math.min((pointsEarned / pointsNeeded) * 100, 100);
+  const canUnlock = pointsEarned >= pointsNeeded;
 
   return (
     <motion.div
@@ -110,8 +110,8 @@ const SpinWheelBanner = ({
                 {isUnlocked
                   ? "Your wheel is ready! Spin to win amazing rewards!"
                   : canUnlock
-                  ? "You've earned enough tokens! Unlock now!"
-                  : `Earn ${tokensNeeded - tokensEarned} more tokens to unlock`
+                  ? "You've earned enough points! Unlock now!"
+                  : `Earn ${pointsNeeded - pointsEarned} more points to unlock`
                 }
               </p>
             </div>
@@ -124,13 +124,13 @@ const SpinWheelBanner = ({
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground flex items-center gap-1">
                     <Zap className="w-3 h-3 text-warning" />
-                    Token Progress
+                    Points Progress
                   </span>
                   <span className={cn(
                     "font-bold",
                     canUnlock ? "text-success" : "text-secondary"
                   )}>
-                    {tokensEarned}/{tokensNeeded}
+                    {pointsEarned}/{pointsNeeded}
                   </span>
                 </div>
                 <div className="h-2.5 bg-muted/50 rounded-full overflow-hidden">
@@ -220,7 +220,7 @@ const SpinWheelBanner = ({
             <div className="flex items-center justify-between text-xs mb-1">
               <span className="text-muted-foreground">
                 <Zap className="w-3 h-3 inline text-warning mr-1" />
-                {tokensEarned}/{tokensNeeded} tokens
+                {pointsEarned}/{pointsNeeded} points
               </span>
               <span className={canUnlock ? "text-success font-bold" : "text-muted-foreground"}>
                 {Math.round(progress)}%

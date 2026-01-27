@@ -2,6 +2,7 @@ const roleService = require('../services/roleService');
 const scoreService = require('../services/scoreService');
 const dataService = require('../services/dataService');
 const guidesService = require('../services/guidesService');
+const historicalPerformanceService = require('../services/historicalPerformanceService');
 
 // Helper functions
 function getCurrentWeek() {
@@ -541,6 +542,81 @@ class AgentController {
       };
 
       res.json(response);
+    } catch (error) {
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
+    }
+  }
+
+  // GET /api/agent/{agentId}/historical-performance
+  async getHistoricalPerformance(req, res) {
+    try {
+      const { agentId } = req.params;
+      const { days = 5 } = req.query;
+      
+      const guide = guidesService.getGuide(agentId);
+      if (!guide) {
+        return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Guide not found' } });
+      }
+
+      const performanceSummary = historicalPerformanceService.getLast5DaysPerformanceSummary(agentId);
+      
+      res.json(performanceSummary);
+    } catch (error) {
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
+    }
+  }
+
+  // GET /api/agent/{agentId}/daily-performance-scores
+  async getDailyPerformanceScores(req, res) {
+    try {
+      const { agentId } = req.params;
+      const { days = 7 } = req.query;
+
+      const guide = guidesService.getGuide(agentId);
+      if (!guide) {
+        return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Guide not found' } });
+      }
+
+      const dailyScores = historicalPerformanceService.getDailyPerformanceScores(agentId, parseInt(days));
+      
+      res.json({ dailyScores });
+    } catch (error) {
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
+    }
+  }
+
+  // GET /api/agent/{agentId}/weekly-point-trajectory
+  async getWeeklyPointTrajectory(req, res) {
+    try {
+      const { agentId } = req.params;
+
+      const guide = guidesService.getGuide(agentId);
+      if (!guide) {
+        return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Guide not found' } });
+      }
+
+      const weeklyTrajectory = historicalPerformanceService.getWeeklyPointTrajectory(agentId);
+      
+      res.json({ weeks: weeklyTrajectory });
+    } catch (error) {
+      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
+    }
+  }
+
+  // GET /api/agent/{agentId}/points-activity-log
+  async getPointsActivityLog(req, res) {
+    try {
+      const { agentId } = req.params;
+      const { period = 'week' } = req.query;
+
+      const guide = guidesService.getGuide(agentId);
+      if (!guide) {
+        return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Guide not found' } });
+      }
+
+      const activityLog = historicalPerformanceService.getPointsActivityLog(agentId, period);
+      
+      res.json(activityLog);
     } catch (error) {
       res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
     }

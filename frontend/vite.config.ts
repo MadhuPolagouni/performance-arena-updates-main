@@ -9,9 +9,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
 
    
-    allowedHosts: [
-      "performance-arena-1.onrender.com",
-    ],
+    allowedHosts: ["localhost", ".localdomain"],
 
     proxy: {
       "/api": {

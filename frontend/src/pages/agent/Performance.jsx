@@ -18,7 +18,7 @@ import {
   ArrowDownRight,
   Sparkles
 } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Line, CartesianGrid } from "recharts";
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Line, CartesianGrid, BarChart, Bar } from "recharts";
 import { cn } from "../../lib/utils";
 import { useAgentPerformance } from "./hooks.jsx";
 import { DashboardSkeleton } from "../../components/ui/PageSkeleton";
@@ -169,7 +169,7 @@ const Performance = () => {
 
           {/* Time Filter */}
           <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/30 border border-border/50">
-            {["This Week", "Last 30 Days", "Last 6 Months", "Last 1 Year"].map((filter) => (
+            {["This Week", "This Month"].map((filter) => (
               <button
                 key={filter}
                 onClick={() => setTimeFilter(filter.toLowerCase().replace(/ /g, "-"))}
@@ -191,7 +191,7 @@ const Performance = () => {
           {[
             { label: "Total Points", value: Math.round(data.totalPoints)?.toLocaleString() || "0", icon: Star, color: "accent", trend: "+15%" },
             { label: "Current Streak", value: `${data.currentStreak || 0} Days`, icon: Flame, color: "warning", trend: "Personal Best!" },
-            { label: "Avg. Score", value: `${data.avgScore || 0}%`, icon: Target, color: "success", trend: "+5%" },
+            { label: "Total Points Earned", value: `${data.totalPointsEarned || 0}`, icon: Target, color: "success", trend: "+5%" },
             { label: "Rank", value: `#${data.rank || 0}`, icon: Award, color: "primary", trend: "↑2 spots" },
           ].map((stat, idx) => (
             <motion.div
@@ -346,6 +346,92 @@ const Performance = () => {
               </div>
             </div>
           </GlassPanel>
+        </motion.div>
+
+        {/* Weekly Breakdown Charts - 4 Weeks */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Generate 4 weekly charts */}
+            {[1, 2, 3, 4].map((week) => {
+              // Sample data - in production, this would come from data.weeklyBreakdowns[week]
+              const weekData = data.weeklyBreakdowns?.[week - 1] || {
+                week: `Week ${week}`,
+                points: Math.floor(Math.random() * 1500) + 500,
+                trend: week % 2 === 0 ? '+12%' : '-5%',
+                days: [
+                  { day: 'Mon', points: 200 },
+                  { day: 'Tue', points: 250 },
+                  { day: 'Wed', points: 180 },
+                  { day: 'Thu', points: 300 },
+                  { day: 'Fri', points: 280 },
+                  { day: 'Sat', points: 150 },
+                  { day: 'Sun', points: 220 },
+                ]
+              };
+              
+              return (
+                <motion.div
+                  key={week}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + week * 0.08 }}
+                >
+                  <GlassPanel className="h-full">
+                    <div className="p-4 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-bold text-foreground">{weekData.week}</h4>
+                        <span className={cn(
+                          "text-xs font-medium px-2 py-1 rounded-full",
+                          weekData.trend.startsWith('+') ? 'bg-success/20 text-success' : 'bg-destructive/20 text-destructive'
+                        )}>
+                          {weekData.trend}
+                        </span>
+                      </div>
+                      
+                      <div className="mb-3">
+                        <span className="text-2xl font-bold text-foreground">{weekData.points}</span>
+                        <span className="text-xs text-muted-foreground ml-1">points</span>
+                      </div>
+                      
+                      <div className="flex-1 min-h-0">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={weekData.days} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border) / 0.3)" vertical={false} />
+                            <XAxis 
+                              dataKey="day" 
+                              axisLine={false}
+                              tickLine={false}
+                              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }}
+                              height={20}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                background: 'hsl(var(--card))',
+                                border: '1px solid hsl(var(--border))',
+                                borderRadius: '6px',
+                                color: 'hsl(var(--foreground))',
+                                fontSize: '11px',
+                              }}
+                            />
+                            <Bar 
+                              dataKey="points" 
+                              fill="hsl(var(--primary))" 
+                              radius={[4, 4, 0, 0]}
+                              isAnimationActive={true}
+                            />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </GlassPanel>
+                </motion.div>
+              );
+            })}
+          </div>
         </motion.div>
 
         {/* Metrics Grid */}

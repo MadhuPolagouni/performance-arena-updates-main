@@ -10,6 +10,10 @@ router.get('/:agentId/leaderboard', agentController.getLeaderboard);
 router.get('/:agentId/playzone', agentController.getPlayzone);
 router.get('/:agentId/achievements', agentController.getAchievements);
 router.get('/:agentId/rewards-vault', agentController.getRewardsVault);
+router.get('/:agentId/historical-performance', agentController.getHistoricalPerformance);
+router.get('/:agentId/daily-performance-scores', agentController.getDailyPerformanceScores);
+router.get('/:agentId/weekly-point-trajectory', agentController.getWeeklyPointTrajectory);
+router.get('/:agentId/points-activity-log', agentController.getPointsActivityLog);
 
 router.post('/:agentId/playzone/scratch', (req, res) => {
 

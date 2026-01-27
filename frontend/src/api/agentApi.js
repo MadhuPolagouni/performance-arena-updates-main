@@ -109,6 +109,42 @@ export const agentApi = {
   async acceptChallenge(agentId, challengeId) {
     return http.post(ENDPOINTS.agent.acceptChallenge(agentId, challengeId));
   },
+
+  /**
+   * Get historical performance (last N days)
+   * @param {string} agentId - Agent ID
+   * @returns {Promise} Historical performance data
+   */
+  async getHistoricalPerformance(agentId) {
+    return http.get(ENDPOINTS.agent.historicalPerformance(agentId));
+  },
+
+  /**
+   * Get daily performance scores
+   * @param {string} agentId - Agent ID
+   * @returns {Promise} Daily scores data
+   */
+  async getDailyPerformanceScores(agentId) {
+    return http.get(ENDPOINTS.agent.dailyPerformanceScores(agentId));
+  },
+
+  /**
+   * Get weekly point trajectory (4 weeks)
+   * @param {string} agentId - Agent ID
+   * @returns {Promise} Weekly trajectory data
+   */
+  async getWeeklyPointTrajectory(agentId) {
+    return http.get(ENDPOINTS.agent.weeklyPointTrajectory(agentId));
+  },
+
+  /**
+   * Get points activity log (KPI metrics)
+   * @param {string} agentId - Agent ID
+   * @returns {Promise} Activity log data
+   */
+  async getPointsActivityLog(agentId) {
+    return http.get(ENDPOINTS.agent.pointsActivityLog(agentId));
+  },
 };
 
 export default agentApi;

@@ -42,6 +42,55 @@ const RewardsAndAchievements = () => {
   const [revealingCard, setRevealingCard] = useState(null);
   const carouselRef = useRef(null);
 
+  // Helper function to calculate tier based on percentile
+  const calculateTier = (percentile) => {
+    if (percentile <= 25) {
+      return {
+        name: "ELITE",
+        label: "Top 1-25%",
+        color: "from-accent via-yellow-500 to-warning",
+        textColor: "text-accent",
+        bgColor: "bg-accent/20",
+        borderColor: "border-accent/30",
+        motivationalQuote: "You're among the very best! Keep pushing."
+      };
+    } else if (percentile <= 50) {
+      return {
+        name: "DIAMOND",
+        label: "Top 26-50%",
+        color: "from-primary to-pink-600",
+        textColor: "text-primary",
+        bgColor: "bg-primary/20",
+        borderColor: "border-primary/30",
+        motivationalQuote: "You're in the top half - aim higher!"
+      };
+    } else if (percentile <= 75) {
+      return {
+        name: "ACHIEVER",
+        label: "Top 51-75%",
+        color: "from-secondary to-blue-600",
+        textColor: "text-secondary",
+        bgColor: "bg-secondary/20",
+        borderColor: "border-secondary/30",
+        motivationalQuote: "Great progress! You're on the right track."
+      };
+    } else {
+      return {
+        name: "RISING STAR",
+        label: "Top 76-100%",
+        color: "from-success to-emerald-600",
+        textColor: "text-success",
+        bgColor: "bg-success/20",
+        borderColor: "border-success/30",
+        motivationalQuote: "You're just starting - every day counts!"
+      };
+    }
+  };
+
+  // Get percentile from data or default to 50
+  const percentile = achievementsData?.percentile || 50;
+  const tier = calculateTier(percentile);
+
   useEffect(() => {
     if (!achievementsData) return;
     
@@ -248,7 +297,7 @@ const RewardsAndAchievements = () => {
               <span className="text-6xl font-display font-black text-white">
                 {achievementsData.level}
               </span>
-              <span className="text-xs text-cyan-400 font-mono mt-2">ELITE</span>
+              <span className="text-xs text-cyan-400 font-mono mt-2">{tier.name}</span>
             </div>
           </div>
 
@@ -258,13 +307,17 @@ const RewardsAndAchievements = () => {
               <h2 className="text-3xl font-display font-bold text-white">
                 {achievementsData.title}
               </h2>
-              <span className="px-3 py-1 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 text-sm font-medium border border-purple-500/30">
-                PRO TIER
+              <span className={cn("px-3 py-1 rounded-full bg-gradient-to-r text-sm font-medium border", tier.color, tier.bgColor, tier.borderColor)}>
+                {tier.name} - {tier.label}
               </span>
             </div>
             
-            <p className="text-purple-400/80 mb-6 font-mono text-sm">
+            <p className="text-purple-400/80 mb-2 font-mono text-sm">
               {(achievementsData.nextLevelXP - animatedXP).toLocaleString()} XP to Level {achievementsData.level + 1}
+            </p>
+            
+            <p className={cn("mb-6 font-mono text-sm italic", tier.textColor)}>
+              "{tier.motivationalQuote}"
             </p>
 
             <div className="mb-8">
@@ -672,58 +725,7 @@ const RewardsAndAchievements = () => {
           })}
         </div>
 
-        {/* Redemption History */}
-        <motion.section
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="arena-panel p-4"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-5 h-5 text-secondary" />
-            <h3 className="font-oxanium text-sm font-bold text-foreground tracking-wider">CLAIM HISTORY</h3>
-          </div>
-
-          <div className="space-y-2">
-            {rewardsData.redemptionHistory.map((item, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.55 + index * 0.05 }}
-                className="flex items-center justify-between p-3 rounded-lg bg-muted/10 border border-border/30"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-9 h-9 rounded-lg flex items-center justify-center",
-                    item.status === "delivered" ? "bg-success/20" :
-                    item.status === "processing" ? "bg-warning/20" :
-                    "bg-muted/30"
-                  )}>
-                    {item.status === "delivered" ? <Check className="w-4 h-4 text-success" /> :
-                     item.status === "processing" ? <Clock className="w-4 h-4 text-warning" /> :
-                     <Gift className="w-4 h-4 text-muted-foreground" />}
-                  </div>
-                  <div>
-                    <p className="font-oxanium font-medium text-foreground text-sm tracking-wide">{item.item}</p>
-                    <p className="text-[10px] text-muted-foreground font-mono">{item.date}</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <span className={cn(
-                    "text-[10px] font-oxanium tracking-wider px-2 py-1 rounded uppercase",
-                    item.status === "delivered" ? "bg-success/20 text-success" :
-                    item.status === "processing" ? "bg-warning/20 text-warning" :
-                    "bg-muted/30 text-muted-foreground"
-                  )}>
-                    {item.status}
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-1 font-mono">-{item.points} CR</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+        {/* Claim History section removed per Phase 3 updates */}
       </div>
     </div>
   );

@@ -378,29 +378,7 @@ const WeeklyChallenges = ({
         })}
       </div>
 
-      {/* Token Earning Sources */}
-      <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-        <h4 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-          <Zap className="w-4 h-4 text-warning" />
-          Ways to Earn Tokens
-        </h4>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-          {[
-            { label: "Challenges", icon: Target, color: "text-primary" },
-            { label: "Scratch Cards", icon: Gift, color: "text-accent" },
-            { label: "Daily Streaks", icon: TrendingUp, color: "text-warning" },
-            { label: "Spin Results", icon: Star, color: "text-secondary" },
-          ].map((source, idx) => {
-            const SourceIcon = source.icon;
-            return (
-              <div key={idx} className="p-3 rounded-lg bg-card/50 border border-border/50">
-                <SourceIcon className={cn("w-5 h-5 mx-auto mb-1", source.color)} />
-                <p className="text-xs text-muted-foreground">{source.label}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      {/* Token Earning Sources - Removed per Phase 1 updates */}
 
       {/* Confetti Effect */}
       <AnimatePresence>

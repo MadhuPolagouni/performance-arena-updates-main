@@ -23,12 +23,9 @@ import { cn } from "../../lib/utils";
 import EliteSpinWheel from "../../components/game/EliteSpinWheel";
 import SpinWheelModal from "../../components/game/SpinWheelModal";
 import ScratchCardRevealModal from "../../components/game/ScratchCardRevealModal";
-import MissionProgress from "../../components/game/MissionProgress";
 import SpinWheelBanner from "../../components/game/SpinWheelBanner";
 import WeeklyChallenges from "../../components/game/WeeklyChallenges";
 import ScratchCardShowcase from "../../components/game/ScratchCardShowcase";
-import EarningHistory from "../../components/game/EarningHistory";
-import SwipeableMissions from "../../components/game/SwipeableMissions";
 import { usePlayzone } from "./hooks.jsx";
 import { PlayzoneSkeleton } from "@/components/ui/PageSkeleton";
 
@@ -150,7 +147,6 @@ const PlayZone = () => {
   const totalPoints = data?.totalPoints || 12450;
   const scratchReward = data?.scratchReward || "+500 PTS";
   const tokensNeeded = data?.tokensNeeded || 100;
-  const dailyMissions = data?.dailyMissions || [];
   const weeklyChallenges = data?.weeklyChallenges || [];
   const transformedWeeklyChallenges = weeklyChallenges.map(challenge => ({
     id: challenge.id,
@@ -167,7 +163,6 @@ const PlayZone = () => {
     completed: challenge.progress >= 100,
   }));
   const scratchCards = data?.scratchCards || [];
-  const earningHistory = data?.earningHistory || [];
   const todaysPerformance = data?.todaysPerformance || { meetsThreshold: true, metric: { name: "Revenue", value: "$520", target: "$500" } };
   const dailyPerformanceScore = data?.dailyPerformanceScore || { score: 88, grade: "A", metrics: [] };
   const weekRange = data?.weekRange || "Sun Jan 19 - Sat Jan 25";
@@ -257,8 +252,8 @@ const PlayZone = () => {
         >
           <SpinWheelBanner
             isUnlocked={wheelUnlocked}
-            tokensEarned={tokenBalance}
-            tokensNeeded={tokensNeeded}
+            pointsEarned={tokenBalance}
+            pointsNeeded={tokensNeeded}
             nextSpinIn={wheelUnlocked ? `${formatTime(countdown.hours)}:${formatTime(countdown.minutes)}` : null}
             onOpenWheel={handleOpenWheel}
           />
@@ -303,41 +298,9 @@ const PlayZone = () => {
           </motion.div>
         </div>
 
-        {/* Daily Missions - Compact */}
-        <motion.section
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <div className="hidden md:block">
-            <MissionProgress missions={dailyMissions} bonusReward="+100 Bonus PTS" />
-          </div>
-          <div className="md:hidden">
-            <SwipeableMissions 
-              missions={dailyMissions.map(m => ({
-                id: m.id,
-                title: m.title || m.name,
-                description: m.description,
-                progress: m.progress || m.current,
-                target: m.target,
-                icon: m.icon || "target",
-                reward: m.reward || m.points,
-                completed: m.completed || (m.progress >= m.target),
-              }))}
-            />
-          </div>
-        </motion.section>
+        {/* Daily Missions - Removed per Phase 1 updates */}
 
-        {/* Earning History - Full width separate card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-        >
-          <div className="arena-panel p-5 border border-primary/20">
-            <EarningHistory history={earningHistory} />
-          </div>
-        </motion.div>
+        {/* Earning History - Removed per Phase 1 updates */}
       </div>
 
       {/* Full-Screen Scratch Card Reveal Modal */}

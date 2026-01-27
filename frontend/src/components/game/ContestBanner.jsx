@@ -149,11 +149,6 @@ const ContestBanner = ({ contest, onDismiss, autoHideDuration = 0 }) => {
                 >
                   Live Contest
                 </span>
-                {contest.createdByRole && (
-                  <span className="text-[10px] text-white/50 uppercase">
-                    by {contest.createdByRole}
-                  </span>
-                )}
               </div>
 
               <h3 className="text-lg font-bold text-white truncate mb-1">

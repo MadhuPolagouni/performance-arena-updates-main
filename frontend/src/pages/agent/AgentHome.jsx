@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { ArrowRight, Star, Flame, Lock, Target, Phone, CheckCircle, DollarSign, Heart, TrendingUp, Sparkles, Trophy, Zap, Gift, Clock, Medal, Crown, Award, Rocket, Shield } from "lucide-react";
+import { ArrowRight, Star, Flame, Lock, Target, Phone, CheckCircle, DollarSign, Heart, TrendingUp, Sparkles, Trophy, Zap, Gift, Clock, Medal, Crown, Award, Rocket, Shield, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { useAgentDashboard } from "./hooks.jsx";
@@ -16,6 +16,9 @@ const AgentHome = () => {
   const [countdown, setCountdown] = useState({ hours: 4, minutes: 23, seconds: 15 });
   const [activeContests, setActiveContests] = useState([]);
   const [dismissedContests, setDismissedContests] = useState([]);
+  const [showLast5DaysModal, setShowLast5DaysModal] = useState(false);
+  const [last5DaysData, setLast5DaysData] = useState(null);
+  const [loadingLast5Days, setLoadingLast5Days] = useState(false);
 
   // Count-up animation based on fetched data
   useEffect(() => {
@@ -109,6 +112,23 @@ const AgentHome = () => {
   const handleDismissContest = (contestId) => {
     setDismissedContests(prev => [...prev, contestId]);
   };
+
+  const handleFetchLast5Days = useCallback(async () => {
+    if (!data?.agentId) return;
+    setLoadingLast5Days(true);
+    try {
+      const response = await fetch(`/api/agent/${data.agentId}/historical-performance?days=5`);
+      if (response.ok) {
+        const performanceData = await response.json();
+        setLast5DaysData(performanceData);
+        setShowLast5DaysModal(true);
+      }
+    } catch (error) {
+      console.error('Failed to fetch last 5 days data:', error);
+    } finally {
+      setLoadingLast5Days(false);
+    }
+  }, [data?.agentId]);
 
   const visibleContests = activeContests.filter(c => !dismissedContests.includes(c.id));
 
@@ -261,12 +281,34 @@ const AgentHome = () => {
                   </p>
                 </div>
               </div>
-              {/* Bonus Reward */}
-              <div className={cn("px-4 py-2 rounded-xl border flex items-center gap-2", allMissionsComplete ? "bg-success/20 border-success/40" : "bg-warning/10 border-warning/30")}>
-                <Gift className={cn("w-5 h-5", allMissionsComplete ? "text-success" : "text-warning")} />
-                <div className="text-right">
-                  <p className="text-[10px] text-muted-foreground uppercase">All Clear Bonus</p>
-                  <p className={cn("font-bold text-sm", allMissionsComplete ? "text-success" : "text-warning")}>+100 Bonus PTS</p>
+              <div className="flex items-center gap-2">
+                {/* View Last 5 Days Button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleFetchLast5Days}
+                  disabled={loadingLast5Days}
+                  className="px-4 py-2 rounded-lg bg-secondary/20 text-secondary hover:bg-secondary/30 transition-colors border border-secondary/40 text-sm font-semibold flex items-center gap-2"
+                >
+                  {loadingLast5Days ? (
+                    <>
+                      <div className="w-3 h-3 rounded-full border-2 border-secondary/40 border-t-secondary animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-4 h-4" />
+                      Last 5 Days
+                    </>
+                  )}
+                </motion.button>
+                {/* Bonus Reward */}
+                <div className={cn("px-4 py-2 rounded-xl border flex items-center gap-2", allMissionsComplete ? "bg-success/20 border-success/40" : "bg-warning/10 border-warning/30")}>
+                  <Gift className={cn("w-5 h-5", allMissionsComplete ? "text-success" : "text-warning")} />
+                  <div className="text-right">
+                    <p className="text-[10px] text-muted-foreground uppercase">All Clear Bonus</p>
+                    <p className={cn("font-bold text-sm", allMissionsComplete ? "text-success" : "text-warning")}>+100 Bonus PTS</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -771,6 +813,131 @@ const AgentHome = () => {
           animation: shimmer 2s infinite;
         }
       `}</style>
+
+      {/* Last 5 Days Performance Modal */}
+      <AnimatePresence>
+        {showLast5DaysModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowLast5DaysModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-card rounded-2xl border border-border/50 max-w-2xl w-full max-h-[80vh] overflow-y-auto shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border/50 p-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-foreground">Last 5 Days Performance</h2>
+                  <p className="text-sm text-muted-foreground mt-1">Your KPI achievements and progress</p>
+                </div>
+                <button
+                  onClick={() => setShowLast5DaysModal(false)}
+                  className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                >
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {last5DaysData?.days && last5DaysData.days.length > 0 ? (
+                  <>
+                    {last5DaysData.days.map((day, idx) => (
+                      <motion.div
+                        key={day.date}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="border border-border/40 rounded-xl p-4 bg-muted/20 hover:bg-muted/30 transition-colors"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-bold text-foreground">{day.date}</h3>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right">
+                              <p className="text-xs text-muted-foreground">XP Earned</p>
+                              <p className="text-lg font-bold text-primary">{day.dailyStats.xpEarned}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs text-muted-foreground">Points</p>
+                              <p className="text-lg font-bold text-secondary">{day.dailyStats.pointsEarned}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* KPI Achievements */}
+                        <div className="space-y-2">
+                          {day.kpiAchievements.map((kpi) => (
+                            <div key={kpi.name} className="flex items-center justify-between text-sm bg-background/40 p-2 rounded-lg">
+                              <div>
+                                <p className="font-medium text-foreground">{kpi.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {kpi.value} / {kpi.target}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-12 h-1 bg-muted rounded-full overflow-hidden">
+                                  <motion.div
+                                    className={`h-full ${kpi.achieved ? 'bg-success' : 'bg-primary'}`}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${Math.min(kpi.percentage, 100)}%` }}
+                                    transition={{ duration: 0.6 }}
+                                  />
+                                </div>
+                                <span className={cn("text-xs font-bold w-8 text-right", kpi.achieved ? 'text-success' : kpi.percentage > 70 ? 'text-warning' : 'text-destructive')}>
+                                  {Math.round(kpi.percentage)}%
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {/* Summary Stats */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="bg-gradient-to-r from-primary/10 to-secondary/10 border border-primary/30 rounded-xl p-4 mt-6"
+                    >
+                      <h4 className="font-bold text-foreground mb-3">5-Day Summary</h4>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Total XP</p>
+                          <p className="text-2xl font-bold text-primary">{last5DaysData.aggregatedStats.totalXP}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Total Points</p>
+                          <p className="text-2xl font-bold text-secondary">{last5DaysData.aggregatedStats.totalPoints}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Avg Daily XP</p>
+                          <p className="text-2xl font-bold text-accent">{last5DaysData.aggregatedStats.averageDailyXP}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-muted-foreground mb-1">Days Tracked</p>
+                          <p className="text-2xl font-bold text-success">{last5DaysData.aggregatedStats.daysWithCompleteData}</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">No historical data available yet</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
