@@ -18,8 +18,12 @@ export const agentApi = {
    * @param {string} agentId - Agent ID
    * @returns {Promise} Performance data
    */
-  async getPerformance(agentId) {
-    return http.get(ENDPOINTS.agent.performance(agentId));
+  async getPerformance(agentId, filters = {}) {
+    const params = new URLSearchParams();
+    if (filters.timeFilter) params.append('timeFilter', filters.timeFilter);
+    const queryString = params.toString();
+    const url = ENDPOINTS.agent.performance(agentId) + (queryString ? '?' + queryString : '');
+    return http.get(url);
   },
 
   /**

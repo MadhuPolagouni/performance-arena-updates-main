@@ -50,6 +50,7 @@ const WeeklyChallenges = ({
       title: "NRPC Streak",
       description: "NRPC > $10 for 3 continuous days",
       tokens: 20,
+      points: 20,
       icon: TrendingUp,
       metric: "NRPC",
       target: "> $10",
@@ -66,6 +67,7 @@ const WeeklyChallenges = ({
       title: "Conversion Master",
       description: "NConv% > 15% for the week",
       tokens: 30,
+      points: 30,
       icon: Target,
       metric: "NConv%",
       target: "> 15%",
@@ -80,6 +82,7 @@ const WeeklyChallenges = ({
       title: "Customer Champion",
       description: "NPS > 70 for the week",
       tokens: 20,
+      points: 20,
       icon: Star,
       metric: "NPS",
       target: "> 70",
@@ -94,6 +97,7 @@ const WeeklyChallenges = ({
       title: "Sales Excellence",
       description: "NAOS > $50 for at least 3 days",
       tokens: 20,
+      points: 20,
       icon: TrendingUp,
       metric: "NAOS",
       target: "> $50",
@@ -110,6 +114,7 @@ const WeeklyChallenges = ({
       title: "Quality Guardian",
       description: "QA Score > 80% for the week",
       tokens: 10,
+      points: 10,
       icon: CheckCircle,
       metric: "QA Score",
       target: "> 80%",
@@ -292,7 +297,7 @@ const WeeklyChallenges = ({
                   <div className="flex items-center gap-2 mb-1">
                     <h4 className="font-bold text-foreground">{challenge.title}</h4>
                     <span className="px-2 py-0.5 rounded-full bg-warning/20 text-warning text-[10px] font-bold">
-                      +{challenge.tokens} TOKENS
+                      +{challenge.points} POINTS
                     </span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">{challenge.description}</p>
@@ -432,7 +437,7 @@ const WeeklyChallenges = ({
                   <div>
                     <p className="text-xs text-muted-foreground font-mono">REWARD CLAIMED</p>
                     <p className="text-base font-bold text-foreground">{claimFx.title}</p>
-                    <p className="text-sm font-bold text-warning">+{claimFx.tokens} TOKENS</p>
+                    <p className="text-sm font-bold text-warning">+{claimFx.tokens} POINTS</p>
                   </div>
                 </div>
 

@@ -22,7 +22,7 @@ export const fetchAgentDashboard = async (agentId) => {
  * @returns {Promise<Object>} Performance data
  */
 export const fetchAgentPerformance = async (agentId, filters = {}) => {
-  return agentApi.getPerformance(agentId);
+  return agentApi.getPerformance(agentId, filters);
 };
 
 /**

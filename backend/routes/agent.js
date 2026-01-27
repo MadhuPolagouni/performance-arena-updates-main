@@ -8,6 +8,15 @@ router.get('/:agentId/dashboard', agentController.getDashboard);
 router.get('/:agentId/performance', agentController.getPerformance);
 router.get('/:agentId/leaderboard', agentController.getLeaderboard);
 router.get('/:agentId/playzone', agentController.getPlayzone);
+router.get('/:agentId/playzone/spin-rewards', (req, res) => {
+  const { agentId } = req.params;
+  try {
+    const spinRewards = agentController.getSpinWheelRewardsHistory(agentId);
+    res.json({ success: true, rewards: spinRewards });
+  } catch (error) {
+    res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
+  }
+});
 router.get('/:agentId/achievements', agentController.getAchievements);
 router.get('/:agentId/rewards-vault', agentController.getRewardsVault);
 router.get('/:agentId/historical-performance', agentController.getHistoricalPerformance);

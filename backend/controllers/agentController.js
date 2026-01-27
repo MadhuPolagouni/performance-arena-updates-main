@@ -15,35 +15,6 @@ function getCurrentWeek() {
   return `${startOfWeek.toLocaleDateString()} - ${endOfWeek.toLocaleDateString()}`;
 }
 
-function getLevelTiers() {
-  return [
-    { name: 'Bronze', minXP: 0, maxXP: 1000, color: 'from-amber-600 to-amber-800' },
-    { name: 'Silver', minXP: 1000, maxXP: 2500, color: 'from-gray-400 to-gray-600' },
-    { name: 'Gold', minXP: 2500, maxXP: 5000, color: 'from-yellow-400 to-yellow-600' },
-    { name: 'Platinum', minXP: 5000, maxXP: 10000, color: 'from-slate-300 to-slate-500' },
-    { name: 'Master', minXP: 10000, maxXP: 20000, color: 'from-purple-500 to-purple-700' }
-  ];
-}
-
-function getCurrentUserPosition(leaderboard, userId) {
-  // Mock current user position
-  return {
-    rank: Math.floor(Math.random() * 50) + 1,
-    name: 'Current User',
-    xp: Math.floor(Math.random() * 5000) + 1000,
-    level: 'Gold',
-    percentile: Math.floor(Math.random() * 30) + 70
-  };
-}
-
-function getDailyMissions(guide) {
-  if (!guide) return [];
-  return [
-    { 
-      id: 1, 
-      title: `Achieve AHT below 20 minutes`, 
-      progress: Math.max(0, 20 - guide.metrics.aht), 
-      total: 20, 
       reward: 50, 
       completed: guide.metrics.aht <= 20,
       current: guide.metrics.aht
@@ -235,8 +206,11 @@ class AgentController {
 
   // GET /api/agent/{agentId}/performance
   async getPerformance(req, res) {
+      const { timeFilter = "this-week" } = req.query; // Support "this-week" or "this-month"
     try {
       const { agentId } = req.params;
+      const { timeFilter } = req.query;
+      // timeFilter: "this-week" or "this-month"
       const guide = guidesService.getGuide(agentId);
       if (!guide) {
         return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Guide not found' } });
@@ -461,6 +435,61 @@ class AgentController {
       const wheelUnlockedByPoints = tokenBalance >= tokensNeeded;
       const wheelUnlockedByChallenges = allChallengesCompleted;
       
+      // Generate dummy scratch card data for last 5 days
+      const today = new Date();
+      const scratchCardsDummy = [
+        {
+          id: 'sc-today',
+          date: today.toISOString().split('T')[0],
+          name: 'Daily Performance',
+          status: 'pending',
+          reward: null,
+          expiresIn: '23h 45m',
+          points: null,
+          claimedAt: null
+        },
+        {
+          id: 'sc-1d',
+          date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'QA Excellence',
+          status: 'pending',
+          reward: null,
+          expiresIn: '12h 30m',
+          points: null,
+          claimedAt: null
+        },
+        {
+          id: 'sc-2d',
+          date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'NPS Achievement',
+          status: 'scratched',
+          reward: '+250 PTS',
+          expiresIn: null,
+          points: 250,
+          claimedAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString()
+        },
+        {
+          id: 'sc-3d',
+          date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'NRPC Target Hit',
+          status: 'scratched',
+          reward: '+450 PTS',
+          expiresIn: null,
+          points: 450,
+          claimedAt: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toLocaleDateString()
+        },
+        {
+          id: 'sc-4d',
+          date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'Daily Streak',
+          status: 'expired',
+          reward: null,
+          expiresIn: null,
+          points: null,
+          claimedAt: null
+        }
+      ];
+      
       const response = {
         streak: guide.streak || 1,
         totalPoints: Math.round(guide.calculated.points || 0),
@@ -470,15 +499,7 @@ class AgentController {
         countdown: { hours: 4, minutes: 23, seconds: 15 },
         dailyMissions: getDailyMissions(guide),
         weeklyChallenges: getWeeklyChallenges(guide),
-        scratchCards: [
-          {
-            id: 'sc1',
-            type: 'daily',
-            available: guide.calculated.points >= 50,
-            revealed: false,
-            reward: null
-          }
-        ],
+        scratchCards: scratchCardsDummy,
         earningHistory: [
           { id: 'e1', source: 'Daily Mission', amount: 100, time: '2 hours ago', status: 'claimed' },
           { id: 'e2', source: 'Spin Wheel', amount: 250, time: '5 hours ago', status: 'claimed' },
@@ -546,6 +567,86 @@ class AgentController {
       const roleData = roleService.getAgentData(agentId);
       const rewardsCatalog = dataService.getData('rewardsCatalog');
 
+      // Generate scratch cards data (5 days)
+      const today = new Date();
+      const scratchCards = [
+        {
+          id: 'sc-today',
+          date: today.toISOString().split('T')[0],
+          name: 'Daily Performance',
+          status: 'pending',
+          reward: null,
+          expiresIn: '23h 45m',
+          points: null,
+          claimedAt: null
+        },
+        {
+          id: 'sc-1d',
+          date: new Date(today.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'QA Excellence',
+          status: 'pending',
+          reward: null,
+          expiresIn: '12h 30m',
+          points: null,
+          claimedAt: null
+        },
+        {
+          id: 'sc-2d',
+          date: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'NPS Achievement',
+          status: 'scratched',
+          reward: '+250 PTS',
+          expiresIn: null,
+          points: 250,
+          claimedAt: new Date(today.getTime() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString()
+        },
+        {
+          id: 'sc-3d',
+          date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'NRPC Target Hit',
+          status: 'scratched',
+          reward: '+450 PTS',
+          expiresIn: null,
+          points: 450,
+          claimedAt: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toLocaleDateString()
+        },
+        {
+          id: 'sc-4d',
+          date: new Date(today.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          name: 'Daily Streak',
+          status: 'expired',
+          reward: null,
+          expiresIn: null,
+          points: null,
+          claimedAt: null
+        }
+      ];
+
+      // Generate spin wheel wins (1 month)
+      const spinWins = [];
+      const rewards = [
+        { reward: '+500 PTS', type: 'points', points: 500 },
+        { reward: '+250 PTS', type: 'points', points: 250 },
+        { reward: '+100 PTS', type: 'points', points: 100 },
+        { reward: '+1000 PTS', type: 'points', points: 1000 },
+        { reward: 'SPIN TOKEN', type: 'spin', points: 0 },
+        { reward: 'MYSTERY BOX', type: 'mystery', points: 0 }
+      ];
+      for (let i = 0; i < 12; i++) {
+        const daysAgo = Math.floor(Math.random() * 30);
+        const spinDate = new Date(today.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+        const reward = rewards[Math.floor(Math.random() * rewards.length)];
+        spinWins.push({
+          id: `spin-${i}`,
+          date: spinDate.toISOString().split('T')[0],
+          reward: reward.reward,
+          type: reward.type,
+          points: reward.points,
+          claimedAt: spinDate.toLocaleDateString(),
+          spinTokensUsed: 1
+        });
+      }
+
       const response = {
         availablePoints: roleData.gamification.totalPoints,
         level: roleData.gamification.level || 1,
@@ -590,13 +691,9 @@ class AgentController {
             claimedAt: '2024-01-05',
             status: 'delivered'
           }
-        ]).slice(0, 5)
-      };
-
-      res.json(response);
-    } catch (error) {
-      res.status(500).json({ error: { code: 'INTERNAL_ERROR', message: error.message } });
-    }
+        ]).slice(0, 5),
+        scratchCards,
+        spinWins
   }
 
   // GET /api/agent/{agentId}/historical-performance
@@ -760,6 +857,41 @@ class AgentController {
       level: 'Gold',
       percentile: Math.floor(Math.random() * 30) + 70
     };
+  }
+
+  // Get spin wheel rewards history (last 1 month)
+  getSpinWheelRewardsHistory(agentId) {
+    const today = new Date();
+    const oneMonthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    
+    const rewards = [
+      { reward: '+500 PTS', type: 'points', points: 500 },
+      { reward: '+250 PTS', type: 'points', points: 250 },
+      { reward: '+100 PTS', type: 'points', points: 100 },
+      { reward: '+1000 PTS', type: 'points', points: 1000 },
+      { reward: 'SPIN TOKEN', type: 'spin', points: 0 },
+      { reward: 'MYSTERY BOX', type: 'mystery', points: 0 }
+    ];
+    
+    // Generate dummy data for last 1 month
+    const spinWheelHistory = [];
+    for (let i = 0; i < 12; i++) {
+      const daysAgo = Math.floor(Math.random() * 30);
+      const spinDate = new Date(today.getTime() - daysAgo * 24 * 60 * 60 * 1000);
+      const reward = rewards[Math.floor(Math.random() * rewards.length)];
+      
+      spinWheelHistory.push({
+        id: `spin-${i}`,
+        date: spinDate.toISOString().split('T')[0],
+        reward: reward.reward,
+        type: reward.type,
+        points: reward.points,
+        claimedAt: spinDate.toLocaleDateString(),
+        spinTokensUsed: 1
+      });
+    }
+    
+    return spinWheelHistory.sort((a, b) => new Date(b.date) - new Date(a.date));
   }
 }
 

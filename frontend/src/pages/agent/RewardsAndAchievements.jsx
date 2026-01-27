@@ -27,6 +27,7 @@ import {
   Eye,
   Unlock,
   Box,
+  Card,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAchievements, useRewardsVault } from "./hooks.jsx";
@@ -578,6 +579,164 @@ const RewardsAndAchievements = () => {
             </span>
           </div>
         </div>
+
+        {/* COLLECTED REWARDS Section - Google Pay Style */}
+        <div className="relative py-4 mt-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border/30"></div>
+          </div>
+          <div className="relative flex justify-center">
+            <span className="px-4 bg-background text-muted-foreground text-xs uppercase tracking-widest font-oxanium flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-secondary" />
+              COLLECTED REWARDS
+            </span>
+          </div>
+        </div>
+
+        {/* Toggle between Scratch Cards and Spin Wins */}
+        <motion.section
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42 }}
+          className="space-y-4"
+        >
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setRelicsType("scratch")}
+              className={cn(
+                "flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border",
+                relicsType === "scratch"
+                  ? "bg-secondary/20 border-secondary/50 text-secondary shadow-lg"
+                  : "bg-muted/20 border-border/50 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <CreditCard className="w-4 h-4" />
+                SCRATCH CARDS
+              </div>
+            </button>
+            <button
+              onClick={() => setRelicsType("wheel")}
+              className={cn(
+                "flex-1 px-4 py-2.5 rounded-lg font-semibold text-sm transition-all border",
+                relicsType === "wheel"
+                  ? "bg-primary/20 border-primary/50 text-primary shadow-lg"
+                  : "bg-muted/20 border-border/50 text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Target className="w-4 h-4" />
+                WHEEL WINS
+              </div>
+            </button>
+          </div>
+
+          {/* Rewards Grid - Google Pay Style Cards */}
+          <div className="grid gap-3">
+            {relicsType === "scratch" && (
+              <>
+                {/* Scratch Cards Display */}
+                {(rewardsData?.scratchCards || []).length === 0 ? (
+                  <div className="text-center py-8">
+                    <CreditCard className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
+                    <p className="text-sm text-muted-foreground">No scratch cards yet</p>
+                  </div>
+                ) : (
+                  (rewardsData?.scratchCards || []).map((card, idx) => (
+                    <motion.div
+                      key={card.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className={cn(
+                        "relative p-4 rounded-xl border overflow-hidden transition-all hover:scale-102",
+                        card.status === "pending"
+                          ? "bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border-yellow-500/30"
+                          : card.status === "scratched"
+                          ? "bg-gradient-to-r from-success/10 to-emerald-500/10 border-success/30"
+                          : "bg-muted/20 border-border/30 opacity-60"
+                      )}
+                    >
+                      {/* Status Badge */}
+                      <div className="absolute top-3 right-3 flex items-center gap-1">
+                        {card.status === "pending" && (
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-400">
+                            {card.expiresIn}
+                          </span>
+                        )}
+                        {card.status === "scratched" && (
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-success/20 text-success">
+                            +{card.points} PTS
+                          </span>
+                        )}
+                        {card.status === "expired" && (
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-destructive/20 text-destructive">
+                            EXPIRED
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground font-mono mb-1">{card.date}</p>
+                          <h4 className="font-bold text-foreground">{card.name}</h4>
+                        </div>
+                        {card.status === "scratched" && (
+                          <Check className="w-5 h-5 text-success ml-2" />
+                        )}
+                      </div>
+
+                      {card.status === "scratched" && (
+                        <p className="text-xs text-muted-foreground mt-2 font-mono">
+                          Claimed {card.claimedAt}
+                        </p>
+                      )}
+                    </motion.div>
+                  ))
+                )}
+              </>
+            )}
+
+            {relicsType === "wheel" && (
+              <>
+                {/* Spin Wheel Wins Display */}
+                <div className="text-xs text-muted-foreground text-center py-2">Last 30 days</div>
+                {(rewardsData?.spinWins || []).length === 0 ? (
+                  <div className="text-center py-8">
+                    <Target className="w-12 h-12 mx-auto text-muted-foreground/40 mb-3" />
+                    <p className="text-sm text-muted-foreground">No spin wins yet</p>
+                  </div>
+                ) : (
+                  (rewardsData?.spinWins || []).map((win, idx) => (
+                    <motion.div
+                      key={win.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className="p-4 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/30 hover:border-primary/50 transition-all"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground font-mono mb-1">{win.date}</p>
+                          <h4 className="font-bold text-foreground flex items-center gap-2">
+                            <Zap className="w-4 h-4 text-warning" />
+                            {win.reward}
+                          </h4>
+                        </div>
+                        {win.points > 0 && (
+                          <div className="text-right">
+                            <span className="text-sm font-bold text-secondary">+{win.points}</span>
+                            <p className="text-[10px] text-muted-foreground">PTS</p>
+                          </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </>
+            )}
+          </div>
+        </motion.section>
 
         {/* Vault Rank Progress */}
         <motion.section

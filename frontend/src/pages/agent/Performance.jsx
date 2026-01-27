@@ -46,7 +46,7 @@ const GlassPanel = ({ children, className, glow = false, glowColor = "primary" }
 );
 
 const Performance = () => {
-  const { data, loading, error } = useAgentPerformance();
+  const { data, loading, error } = useAgentPerformance({}, { timeFilter });
   const [timeFilter, setTimeFilter] = useState("this-week");
   const [activeMetricFilter, setActiveMetricFilter] = useState("All");
 

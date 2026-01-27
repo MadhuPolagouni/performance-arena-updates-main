@@ -256,6 +256,7 @@ const PlayZone = () => {
             pointsNeeded={tokensNeeded}
             nextSpinIn={wheelUnlocked ? `${formatTime(countdown.hours)}:${formatTime(countdown.minutes)}` : null}
             onOpenWheel={handleOpenWheel}
+            onViewChallenges={() => document.querySelector('[data-scroll-to="challenges"]')?.scrollIntoView({ behavior: 'smooth' })}
           />
         </motion.section>
 
@@ -267,6 +268,7 @@ const PlayZone = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             className="xl:col-span-2"
+            data-scroll-to="challenges"
           >
             <div className="arena-panel p-5 border border-secondary/20">
               <WeeklyChallenges
