@@ -171,23 +171,31 @@ const ScratchCardShowcase = ({
       status: "scratched",
       reward: "+250 PTS",
       source: "NPS Achievement",
-      claimedAt: "Jan 22, 2:30 PM",
+      claimedAt: "Jan 25, 2:30 PM",
     },
     {
       id: 4,
       date: "3 days ago",
-      status: "expired",
-      reward: "Expired",
-      source: "Daily Streak",
-      expiredAt: "Jan 21",
+      status: "scratched",
+      reward: "+450 PTS",
+      source: "NRPC Target Hit",
+      claimedAt: "Jan 24, 3:15 PM",
     },
     {
       id: 5,
       date: "4 days ago",
+      status: "expired",
+      reward: "Expired",
+      source: "Daily Streak",
+      expiredAt: "Jan 23",
+    },
+    {
+      id: 6,
+      date: "5 days ago",
       status: "scratched",
       reward: "+500 PTS",
       source: "Weekly Bonus",
-      claimedAt: "Jan 20, 11:15 AM",
+      claimedAt: "Jan 22, 11:15 AM",
     },
   ];
 
@@ -419,6 +427,27 @@ const ScratchCardShowcase = ({
           <p className="text-muted-foreground">No scratch cards yet</p>
           <p className="text-sm text-muted-foreground/70">Meet your daily targets to earn cards!</p>
         </div>
+      )}
+
+      {/* View More Rewards Button */}
+      {displayCards.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="pt-4 mt-4 border-t border-border/30"
+        >
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => window.location.href = '/agent/rewards'}
+            className="w-full px-4 py-3 rounded-lg bg-gradient-to-r from-accent/20 to-primary/20 border border-accent/40 text-accent hover:from-accent/30 hover:to-primary/30 text-sm font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2"
+          >
+            <Gift className="w-4 h-4" />
+            View More Rewards & Achievements
+            <ChevronRight className="w-4 h-4" />
+          </motion.button>
+        </motion.div>
       )}
     </div>
   );

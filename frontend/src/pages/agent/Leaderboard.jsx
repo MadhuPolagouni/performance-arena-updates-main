@@ -532,22 +532,22 @@ const Leaderboard = () => {
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
                   />
-                  <div className="w-14 h-14 lg:w-18 lg:h-18 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-lg lg:text-xl font-bold text-white border-2 border-amber-500 shadow-lg relative z-10">
+                  <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-xl lg:text-2xl font-bold text-white border-2 border-amber-500 shadow-lg relative z-10">
                     {data.topThree[2].avatar}
                   </div>
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-amber-600 rounded text-[9px] font-bold text-white">
-                    #{data.topThree[2].rank}
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-amber-600 rounded text-[10px] font-bold text-white">
+                    3RD PLACE
                   </div>
                 </div>
-                <h4 className="font-oxanium font-bold text-foreground text-sm lg:text-base">{data.topThree[2].name}</h4>
-                <p className="font-display text-lg text-secondary">{data.topThree[2].xp || pointsToXP(data.topThree[2].points)} XP</p>
+                <h4 className="font-display text-amber-500 text-base lg:text-lg tracking-wide">{data.topThree[2].name}</h4>
+                <p className="font-display text-xl lg:text-2xl text-amber-400">{data.topThree[2].xp || pointsToXP(data.topThree[2].points)} XP</p>
                 <div className={cn(
-                  "mt-1 px-2 py-0.5 rounded text-[9px] font-bold bg-gradient-to-r text-white",
+                  "mt-1 px-2 py-0.5 rounded text-[10px] font-bold bg-gradient-to-r text-white",
                   getUserLevel(data.topThree[2].xp || pointsToXP(data.topThree[2].points)).color
                 )}>
-                  {getUserLevel(data.topThree[2].xp || pointsToXP(data.topThree[2].points)).icon}
+                  {getUserLevel(data.topThree[2].xp || pointsToXP(data.topThree[2].points)).icon} {getUserLevel(data.topThree[2].xp || pointsToXP(data.topThree[2].points)).name}
                 </div>
-                <div className="w-18 lg:w-22 h-16 lg:h-20 mt-3 rounded-t-lg bg-gradient-to-b from-amber-600/20 to-amber-800/30 flex items-center justify-center font-display text-3xl lg:text-4xl font-bold text-amber-500 border-t border-x border-amber-600/30">
+                <div className="w-24 lg:w-32 h-28 lg:h-36 mt-3 rounded-t-lg bg-gradient-to-b from-amber-600/20 to-amber-800/30 flex items-center justify-center font-display text-5xl lg:text-6xl font-bold text-amber-500 border-t border-x border-amber-600/30 shadow-[0_0_30px_hsla(35,100%,50%,0.2)]">
                   3
                 </div>
               </motion.div>

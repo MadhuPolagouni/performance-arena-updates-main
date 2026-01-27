@@ -168,10 +168,10 @@ const SpinWheelBanner = ({
             {!isUnlocked && (
               <button
                 onClick={onViewChallenges}
-                className="hidden sm:flex items-center gap-1 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-primary hover:bg-primary/10 transition-all border border-primary/30 hover:border-primary/50"
               >
-                View Challenges
-                <ChevronRight className="w-4 h-4" />
+                <Trophy className="w-4 h-4" />
+                Accept Challenges
               </button>
             )}
 

@@ -40,6 +40,7 @@ const RewardsAndAchievements = () => {
   const [wishlist, setWishlist] = useState([1, 5]);
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [revealingCard, setRevealingCard] = useState(null);
+  const [relicsType, setRelicsType] = useState("scratch"); // "scratch" or "wheel"
   const carouselRef = useRef(null);
 
   // Helper function to calculate tier based on percentile
@@ -190,7 +191,17 @@ const RewardsAndAchievements = () => {
 
   if (!achievementsData || !rewardsData) return null;
 
-  const earnedBadges = achievementsData.badges.filter(b => b.earned);
+  // Filter badges by tier and relics type
+  const earnedBadges = achievementsData.badges.filter(b => {
+    if (!b.earned) return false;
+    // Filter by tier - show badges that match current tier
+    const badgeTier = b.tier || "all"; // Default to "all" if no tier specified
+    if (badgeTier !== "all" && badgeTier !== tier.name.toLowerCase()) return false;
+    // Filter by relics type (scratch vs wheel achievements)
+    if (relicsType === "scratch" && b.type !== "scratch") return false;
+    if (relicsType === "wheel" && b.type !== "wheel") return false;
+    return true;
+  });
   const inProgressBadges = achievementsData.badges.filter(b => !b.earned);
 
   // SVG ring values
@@ -303,22 +314,52 @@ const RewardsAndAchievements = () => {
 
           {/* Level Info & Stats */}
           <div className="flex-1 w-full">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-6">
               <h2 className="text-3xl font-display font-bold text-white">
                 {achievementsData.title}
               </h2>
-              <span className={cn("px-3 py-1 rounded-full bg-gradient-to-r text-sm font-medium border", tier.color, tier.bgColor, tier.borderColor)}>
-                {tier.name} - {tier.label}
-              </span>
+              <motion.span 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className={cn(
+                  "px-4 py-2 rounded-full bg-gradient-to-r text-sm font-bold border shadow-lg",
+                  tier.color, 
+                  tier.bgColor, 
+                  tier.borderColor,
+                  "shadow-[0_0_20px_hsla(280,100%,60%,0.3)]"
+                )}
+              >
+                {tier.name}
+              </motion.span>
+              <motion.span 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="px-3 py-2 rounded-lg bg-slate-800/50 border border-purple-500/20 text-xs font-mono text-purple-400"
+              >
+                {tier.label}
+              </motion.span>
             </div>
             
-            <p className="text-purple-400/80 mb-2 font-mono text-sm">
+            <p className="text-purple-400/80 mb-3 font-mono text-sm">
               {(achievementsData.nextLevelXP - animatedXP).toLocaleString()} XP to Level {achievementsData.level + 1}
             </p>
             
-            <p className={cn("mb-6 font-mono text-sm italic", tier.textColor)}>
-              "{tier.motivationalQuote}"
-            </p>
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className={cn(
+                "mb-6 p-4 rounded-lg border-2 italic text-center",
+                tier.bgColor,
+                tier.borderColor
+              )}
+            >
+              <p className={cn(tier.textColor, "font-semibold")}>
+                "{tier.motivationalQuote}"
+              </p>
+            </motion.div>
 
             <div className="mb-8">
               <div className="flex justify-between text-sm mb-2">
@@ -329,28 +370,45 @@ const RewardsAndAchievements = () => {
                   {achievementsData.nextLevelXP.toLocaleString()} XP
                 </span>
               </div>
-              <div className="h-4 bg-slate-800 rounded-full overflow-hidden">
-                <div 
+              <div className="h-4 bg-slate-800 rounded-full overflow-hidden border border-purple-500/20">
+                <motion.div 
                   className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_hsla(280,100%,60%,0.6)]"
-                  style={{ width: `${achievementsData.levelProgress}%` }}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${achievementsData.levelProgress}%` }}
+                  transition={{ duration: 0.8 }}
                 />
               </div>
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="p-5 rounded-xl bg-slate-800/50 border border-purple-500/20 text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="p-5 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-amber-400/30 text-center hover:border-amber-400/60 transition-all hover:shadow-[0_0_20px_hsla(45,100%,50%,0.2)]"
+              >
                 <p className="text-3xl font-display font-bold text-amber-400">{earnedBadges.length}</p>
                 <p className="text-xs text-purple-400/60 font-mono mt-2">BADGES</p>
-              </div>
-              <div className="p-5 rounded-xl bg-slate-800/50 border border-purple-500/20 text-center">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="p-5 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-cyan-400/30 text-center hover:border-cyan-400/60 transition-all hover:shadow-[0_0_20px_hsla(180,100%,50%,0.2)]"
+              >
                 <p className="text-3xl font-display font-bold text-cyan-400">12</p>
                 <p className="text-xs text-purple-400/60 font-mono mt-2">STREAK</p>
-              </div>
-              <div className="p-5 rounded-xl bg-slate-800/50 border border-purple-500/20 text-center">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="p-5 rounded-xl bg-gradient-to-br from-slate-800 to-slate-900 border border-emerald-400/30 text-center hover:border-emerald-400/60 transition-all hover:shadow-[0_0_20px_hsla(120,100%,50%,0.2)]"
+              >
                 <p className="text-3xl font-display font-bold text-emerald-400">98%</p>
                 <p className="text-xs text-purple-400/60 font-mono mt-2">COMPLETE</p>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -358,11 +416,38 @@ const RewardsAndAchievements = () => {
 
         {/* Earned Badges - Unlocked Relics */}
        <div>
-        <h2 className="text-xl font-display font-bold text-white mb-4 flex items-center gap-3">
-          <Trophy className="w-5 h-5 text-amber-400" />
-          BADGES EARNED
-          <span className="text-sm text-purple-400/60 font-mono">({earnedBadges.length})</span>
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-display font-bold text-white flex items-center gap-3">
+            <Trophy className="w-5 h-5 text-amber-400" />
+            BADGES EARNED
+            <span className="text-sm text-purple-400/60 font-mono">({earnedBadges.length})</span>
+          </h2>
+          {/* Relics Toggle */}
+          <div className="flex items-center gap-2 bg-slate-800/30 rounded-lg border border-purple-500/20 p-1">
+            <button
+              onClick={() => setRelicsType("scratch")}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
+                relicsType === "scratch" 
+                  ? "bg-gradient-to-r from-accent to-yellow-500 text-black shadow-lg" 
+                  : "text-purple-400/60 hover:text-purple-400"
+              )}
+            >
+              Scratch Card
+            </button>
+            <button
+              onClick={() => setRelicsType("wheel")}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-semibold transition-all",
+                relicsType === "wheel" 
+                  ? "bg-gradient-to-r from-primary to-pink-500 text-white shadow-lg" 
+                  : "text-purple-400/60 hover:text-purple-400"
+              )}
+            >
+              Wheel Wins
+            </button>
+          </div>
+        </div>
         
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           {earnedBadges.map((badge, index) => (

@@ -89,7 +89,7 @@ const PlayZone = () => {
   }, [actions]);
 
   const handleOpenWheel = useCallback(() => {
-    const tokensNeeded = data?.tokensNeeded || 100;
+    const tokensNeeded = data?.tokensNeeded || 250; // Updated to 250 points for spin wheel unlock
     // Open wheel modal if user has enough tokens
     if (tokenBalance >= tokensNeeded || wheelUnlocked) {
       setShowWheelModal(true);
@@ -146,7 +146,7 @@ const PlayZone = () => {
   const activeStreak = data?.streak || 7;
   const totalPoints = data?.totalPoints || 12450;
   const scratchReward = data?.scratchReward || "+500 PTS";
-  const tokensNeeded = data?.tokensNeeded || 100;
+  const tokensNeeded = data?.tokensNeeded || 250; // Updated to 250 points for spin wheel unlock
   const weeklyChallenges = data?.weeklyChallenges || [];
   const transformedWeeklyChallenges = weeklyChallenges.map(challenge => ({
     id: challenge.id,
@@ -159,7 +159,7 @@ const PlayZone = () => {
     duration: "Weekly",
     progress: challenge.progress,
     currentValue: challenge.value,
-    accepted: true, // assume accepted
+    accepted: challenge.accepted || false, // Use data from backend, default to false
     completed: challenge.progress >= 100,
   }));
   const scratchCards = data?.scratchCards || [];

@@ -407,14 +407,20 @@ class AgentController {
       }
 
       const tokenBalance = guide.calculated.points || 0;
-      const tokensNeeded = 50; // Reasonable threshold to spin
+      const tokensNeeded = 250; // Points needed to unlock spin wheel (as per requirements)
+      
+      // Check if all weekly challenges are completed for wheel unlock
+      const challenges = getWeeklyChallenges(guide);
+      const allChallengesCompleted = challenges.length > 0 && challenges.every(c => c.progress >= 100);
+      const wheelUnlockedByPoints = tokenBalance >= tokensNeeded;
+      const wheelUnlockedByChallenges = allChallengesCompleted;
       
       const response = {
         streak: guide.streak || 1,
         totalPoints: Math.round(guide.calculated.points || 0),
         tokenBalance: Math.round(tokenBalance),
         tokensNeeded: tokensNeeded,
-        wheelUnlocked: tokenBalance >= tokensNeeded,
+        wheelUnlocked: wheelUnlockedByPoints || wheelUnlockedByChallenges,
         countdown: { hours: 4, minutes: 23, seconds: 15 },
         dailyMissions: getDailyMissions(guide),
         weeklyChallenges: getWeeklyChallenges(guide),
