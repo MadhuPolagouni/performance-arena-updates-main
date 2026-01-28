@@ -132,16 +132,32 @@ const PlayZone = () => {
     }
   }, [actions, refetch]);
 
+  const [acceptedChallengeIds, setAcceptedChallengeIds] = useState([]);
+
   const handleAcceptChallenge = useCallback((challengeId) => {
     console.log("Challenge accepted:", challengeId);
-    // This now gets called by WeeklyChallenges component when user clicks Accept
+    setAcceptedChallengeIds(prev => {
+      if (!prev.includes(challengeId)) {
+        return [...prev, challengeId];
+      }
+      return prev;
+    });
   }, []);
 
   const handleAcceptAllChallenges = useCallback(() => {
-    // Accept all challenges at once
-    console.log("All challenges accepted");
-    // This will trigger the challenge acceptance flow in WeeklyChallenges component
-  }, []);
+    // Accept all weekly challenges at once
+    if (data?.weeklyChallenges && data.weeklyChallenges.length > 0) {
+      const allChallengeIds = data.weeklyChallenges.map(c => c.id);
+      setAcceptedChallengeIds(allChallengeIds);
+      
+      // Trigger onAcceptChallenge for each challenge
+      allChallengeIds.forEach(id => {
+        console.log("Accepting challenge:", id);
+      });
+      
+      console.log("All challenges accepted:", allChallengeIds);
+    }
+  }, [data?.weeklyChallenges]);
 
   const handleClaimChallengeReward = useCallback((challengeId, tokens) => {
     setTokenBalance(prev => prev + tokens);
@@ -294,6 +310,7 @@ const PlayZone = () => {
                 weekRange={weekRange}
                 onAcceptChallenge={handleAcceptChallenge}
                 onClaimReward={handleClaimChallengeReward}
+                acceptedChallengesFromParent={acceptedChallengeIds}
               />
             </div>
           </motion.div>

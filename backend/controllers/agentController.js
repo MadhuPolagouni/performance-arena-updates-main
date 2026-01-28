@@ -757,21 +757,35 @@ class AgentController {
         });
       }
 
+      // Vault Rank Progress
+      const userBalance = roleData.gamification.totalPoints || 0;
+      const userRank = Math.floor((userBalance / 10000) * 5) + 1; // Levels 1-5 based on points
+      const nextRankPoints = (userRank * 10000);
+      const pointsToNextRank = Math.max(0, nextRankPoints - userBalance);
+
       const response = {
         availablePoints: roleData.gamification.totalPoints,
         level: roleData.gamification.level || 1,
         nextLevelXP: roleData.gamification.nextLevelXP || 1000,
+        userRank: userRank,
+        userBalance: userBalance,
+        nextRankPoints: nextRankPoints,
+        nextRank: userRank + 1,
         rewards: rewardsCatalog.slice(0, 10).map(reward => ({
           id: reward.reward_id,
+          title: reward.name,
           name: reward.name,
           description: reward.description,
           category: reward.category,
+          points: reward.point_cost,
           pointCost: reward.point_cost,
           rarity: reward.point_cost > 4000 ? 'legendary' : reward.point_cost > 2000 ? 'epic' : reward.point_cost > 500 ? 'rare' : 'common',
           inStock: reward.stock !== 'Unlimited' ? reward.stock > 0 : true,
+          stock: reward.stock !== 'Unlimited' ? reward.stock : null,
           stockCount: reward.stock !== 'Unlimited' ? reward.stock : null,
           image: reward.image || '🎁',
-          status: reward.status
+          status: reward.status,
+          requiredRank: Math.floor(reward.point_cost / 2000) + 1
         })),
         claimHistory: roleData.pointsHistory.filter(entry => entry.points < 0).map(entry => ({
           id: entry.transaction_id,

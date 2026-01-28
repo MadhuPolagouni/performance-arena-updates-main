@@ -29,6 +29,7 @@ const WeeklyChallenges = ({
   onAcceptChallenge,
   onClaimReward,
   weekRange = "Sun-Sat",
+  acceptedChallengesFromParent = [],
 }) => {
   const [acceptedChallenges, setAcceptedChallenges] = useState(
     challenges.filter(c => c.accepted).map(c => c.id)
@@ -37,6 +38,17 @@ const WeeklyChallenges = ({
   const [showConfetti, setShowConfetti] = useState(false);
   const [claimFx, setClaimFx] = useState(null);
   const [tokenPulse, setTokenPulse] = useState(0);
+
+  // Update accepted challenges when parent passes new ones
+  useEffect(() => {
+    if (acceptedChallengesFromParent && acceptedChallengesFromParent.length > 0) {
+      setAcceptedChallenges(acceptedChallengesFromParent);
+      // Call onAcceptChallenge for each newly accepted challenge
+      acceptedChallengesFromParent.forEach(id => {
+        onAcceptChallenge?.(id);
+      });
+    }
+  }, [acceptedChallengesFromParent, onAcceptChallenge]);
 
   useEffect(() => {
     if (!claimFx) return;

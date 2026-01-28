@@ -302,7 +302,7 @@ const AgentHome = () => {
               </div>
               <div className="flex items-center gap-2">
                 {/* View Last 5 Days Button */}
-                <motion.button
+                {/* <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={handleFetchLast5Days}
@@ -320,7 +320,7 @@ const AgentHome = () => {
                       Last 5 Days
                     </>
                   )}
-                </motion.button>
+                </motion.button> */}
                 {/* Bonus Reward */}
                 <div className={cn("px-4 py-2 rounded-xl border flex items-center gap-2", allMissionsComplete ? "bg-success/20 border-success/40" : "bg-warning/10 border-warning/30")}>
                   <Gift className={cn("w-5 h-5", allMissionsComplete ? "text-success" : "text-warning")} />
@@ -465,7 +465,7 @@ const AgentHome = () => {
               >
                 <div className="flex items-center gap-2">
                   <Activity className="w-4 h-4 text-primary" />
-                  <span className="font-semibold text-foreground">Today's KPI Metrics</span>
+                  <span className="font-semibold text-foreground">Last 5 Days KPI Metrics</span>
                 </div>
                 <motion.div
                   animate={{ rotate: showExpandedKPIs ? 180 : 0 }}
@@ -486,7 +486,7 @@ const AgentHome = () => {
                   >
                     {/* Today's KPI row */}
                     <div className="space-y-2">
-                      <h4 className="text-sm font-bold text-foreground px-4">Today</h4>
+                      <h4 className="text-sm font-bold text-foreground px-4">Current</h4>
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
                         {[
                           { name: 'New Revenue', value: kpiHistoryData[0].new_revenue, target: kpiTargets.new_revenue, unit: '$' },
@@ -633,14 +633,14 @@ const AgentHome = () => {
             <div className="flex-1 min-w-[200px]">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-muted-foreground">Unlock Progress</span>
-                <span className="text-sm font-bold text-primary">{data.spinUnlockProgress}%</span>
+                <span className="text-sm font-bold text-primary">90%</span>
               </div>
               <div className="h-3 bg-muted rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-500 rounded-full"
                   style={{ boxShadow: "0 0 10px hsla(280,100%,60%,0.5)" }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${data.spinUnlockProgress}%` }}
+                  animate={{ width: `90%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
                 />
               </div>
