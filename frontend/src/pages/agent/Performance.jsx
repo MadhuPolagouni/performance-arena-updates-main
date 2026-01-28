@@ -190,9 +190,9 @@ const Performance = () => {
         {/* Stats Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Points", value: Math.round(data.totalPoints)?.toLocaleString() || "0", icon: Star, color: "accent", trend: "+15%" },
+            { label: "Total XPS", value: Math.round(data.totalXPEarned)?.toLocaleString() || "0", icon: Star, color: "accent", trend: "+15%" },
             { label: "Current Streak", value: `${data.currentStreak || 0} Days`, icon: Flame, color: "warning", trend: "Personal Best!" },
-            { label: "Total Points Earned", value: `${data.totalPointsEarned || 0}`, icon: Target, color: "success", trend: "+5%" },
+            { label: "Total Points Earned", value: `${data.totalPoints || 0}`, icon: Target, color: "success", trend: "+5%" },
             { label: "Rank", value: `#${data.rank || 0}`, icon: Award, color: "primary", trend: "↑2 spots" },
           ].map((stat, idx) => (
             <motion.div
@@ -393,16 +393,15 @@ const Performance = () => {
           </div>
         </motion.section>
 
-        {/* Weekly Breakdown Charts - 4 Weeks */}
+        {/* Weekly Breakdown Charts - 4 Weeks - COMMENTED OUT */}
+        {/* 
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Generate 4 weekly charts */}
             {[1, 2, 3, 4].map((week) => {
-              // Sample data - in production, this would come from data.weeklyBreakdowns[week]
               const weekData = data.weeklyBreakdowns?.[week - 1] || {
                 week: `Week ${week}`,
                 points: Math.floor(Math.random() * 1500) + 500,
@@ -478,6 +477,7 @@ const Performance = () => {
             })}
           </div>
         </motion.div>
+        */}
 
         {/* Metrics Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
