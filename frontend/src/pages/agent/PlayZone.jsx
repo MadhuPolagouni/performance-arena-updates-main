@@ -22,6 +22,7 @@ import {
 import { cn } from "../../lib/utils";
 import EliteSpinWheel from "../../components/game/EliteSpinWheel";
 import SpinWheelModal from "../../components/game/SpinWheelModal";
+import SpinWheelNew from "../../components/game/SpinWheelNew";
 import ScratchCardRevealModal from "../../components/game/ScratchCardRevealModal";
 import SpinWheelBanner from "../../components/game/SpinWheelBanner";
 import WeeklyChallenges from "../../components/game/WeeklyChallenges";
@@ -352,8 +353,8 @@ const PlayZone = () => {
         currentBalance={currentPoints}
       />
 
-      {/* Spin Wheel Modal with Token Deduction */}
-      <SpinWheelModal
+      {/* Spin Wheel Modal with Token Deduction - New Enhanced Wheel */}
+      <SpinWheelNew
         isOpen={showWheelModal}
         onClose={() => setShowWheelModal(false)}
         onSpin={handleSpinWheel}
@@ -361,6 +362,7 @@ const PlayZone = () => {
         tokenBalance={tokenBalance}
         tokenCost={tokensNeeded}
         currentPoints={currentPoints}
+        onClaimSuccess={() => refetch()}
       />
     </div>
   );
