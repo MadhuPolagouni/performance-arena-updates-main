@@ -16,7 +16,8 @@ import {
   Star,
   ArrowUpRight,
   ArrowDownRight,
-  Sparkles
+  Sparkles,
+  Gift
 } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip, Line, CartesianGrid, BarChart, Bar } from "recharts";
 import { cn } from "../../lib/utils";
@@ -237,116 +238,160 @@ const Performance = () => {
         </div>
 
         {/* Chart Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
+        {/* PERFORMANCE REVIEW Section - Line Graph */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="relative py-8"
         >
-          <GlassPanel glow glowColor="secondary">
-            <div className="p-5">
-              <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-secondary/20 flex items-center justify-center">
-                    <BarChart3 className="w-5 h-5 text-secondary" />
+          <div className="flex items-center gap-3 mb-6">
+            <TrendingUp className="w-5 h-5 text-emerald-400" />
+            <h2 className="text-xl font-display font-bold text-white tracking-wider">
+              PERFORMANCE REVIEW
+            </h2>
+            <span className="text-xs text-purple-400/60 font-mono ml-auto">Last 30 days</span>
+          </div>
+
+          <div className="glass-card-hero p-8 relative overflow-hidden">
+            {/* Background grid effect */}
+            <div className="absolute inset-0 opacity-5">
+              <svg width="100%" height="100%" className="text-purple-400">
+                <defs>
+                  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+              </svg>
+            </div>
+
+            <div className="relative z-10">
+              {/* Metrics Summary */}
+              <div className="grid grid-cols-3 gap-4 mb-8">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.25 }}
+                  className="p-4 rounded-lg bg-gradient-to-br from-emerald-900/40 to-emerald-900/20 border border-emerald-400/30"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-emerald-400 font-mono tracking-wider">POINTS GAINED</span>
+                    <TrendingUp className="w-4 h-4 text-emerald-400" />
                   </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
-                      Weekly Point Trajectory
-                    </h3>
-                    <p className="text-sm text-muted-foreground">Points vs. team average</p>
+                  <p className="text-3xl font-display font-bold text-emerald-400">
+                    +{data?.totalPointsGained || 0}
+                  </p>
+                  <p className="text-xs text-emerald-400/60 mt-1">+15% vs last week</p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.27 }}
+                  className="p-4 rounded-lg bg-gradient-to-br from-cyan-900/40 to-cyan-900/20 border border-cyan-400/30"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-cyan-400 font-mono tracking-wider">XP EARNED</span>
+                    <Zap className="w-4 h-4 text-cyan-400" />
                   </div>
-                </div>
-                <div className="flex items-center gap-5 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-gradient-to-r from-primary to-secondary" />
-                    <span className="text-muted-foreground">Your Points</span>
+                  <p className="text-3xl font-display font-bold text-cyan-400">
+                    +{data?.totalXPEarned || 0}
+                  </p>
+                  <p className="text-xs text-cyan-400/60 mt-1">Level {data?.currentLevel || 1} Progress</p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.29 }}
+                  className="p-4 rounded-lg bg-gradient-to-br from-amber-900/40 to-amber-900/20 border border-amber-400/30"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-amber-400 font-mono tracking-wider">REWARDS CLAIMED</span>
+                    <Gift className="w-4 h-4 text-amber-400" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-secondary/50" />
-                    <span className="text-muted-foreground">Team Avg</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-6 h-0.5 bg-muted border-t border-dashed border-muted-foreground/50" />
-                    <span className="text-muted-foreground">Target</span>
-                  </div>
-                </div>
+                  <p className="text-3xl font-display font-bold text-amber-400">
+                    {data?.rewardsClaimed || 0}
+                  </p>
+                  <p className="text-xs text-amber-400/60 mt-1">This month</p>
+                </motion.div>
               </div>
 
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data.weeklyData}>
-                    <defs>
-                      <linearGradient id="colorPoints" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                        <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="colorTeam" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="hsl(var(--secondary))" stopOpacity={0.2} />
-                        <stop offset="95%" stopColor="hsl(var(--secondary))" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis 
-                      dataKey="day" 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    />
-                    <YAxis 
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
-                    />
-                    <Tooltip
-                      contentStyle={{
-                        background: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                        color: 'hsl(var(--foreground))',
-                        fontSize: '12px',
-                      }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="target"
-                      stroke="hsl(var(--muted-foreground) / 0.4)"
-                      strokeWidth={2}
-                      strokeDasharray="8 8"
-                      dot={false}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="team"
-                      stroke="hsl(var(--secondary))"
-                      strokeWidth={2}
-                      fill="url(#colorTeam)"
-                      dot={false}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="points"
-                      stroke="hsl(var(--primary))"
-                      strokeWidth={3}
-                      fill="url(#colorPoints)"
-                      dot={{ 
-                        fill: 'hsl(var(--primary))', 
-                        stroke: 'hsl(var(--background))', 
-                        strokeWidth: 2, 
-                        r: 4,
-                      }}
-                      activeDot={{
-                        r: 6,
-                        stroke: 'hsl(var(--primary))',
-                        strokeWidth: 2,
-                        fill: 'hsl(var(--background))',
-                      }}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+              {/* Simplified Line Graph */}
+              <div className="relative h-64 bg-gradient-to-b from-transparent to-slate-900/30 rounded-xl border border-purple-500/20 p-4 overflow-hidden">
+                <svg viewBox="0 0 800 200" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                  {/* Background grid lines */}
+                  <line x1="0" y1="50" x2="800" y2="50" stroke="hsla(280, 30%, 40%, 0.2)" strokeWidth="1" strokeDasharray="5,5" />
+                  <line x1="0" y1="100" x2="800" y2="100" stroke="hsla(280, 30%, 40%, 0.2)" strokeWidth="1" strokeDasharray="5,5" />
+                  <line x1="0" y1="150" x2="800" y2="150" stroke="hsla(280, 30%, 40%, 0.2)" strokeWidth="1" strokeDasharray="5,5" />
+                  
+                  {/* Gradient fill under line */}
+                  <defs>
+                    <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="hsl(280, 100%, 60%)" stopOpacity="0.3"/>
+                      <stop offset="100%" stopColor="hsl(280, 100%, 60%)" stopOpacity="0.05"/>
+                    </linearGradient>
+                  </defs>
+
+                  {/* Performance line with curve */}
+                  <polyline
+                    points="50,120 110,95 170,80 230,90 290,65 350,55 410,70 470,45 530,35 590,60 650,40 710,50 760,30"
+                    fill="none"
+                    stroke="url(#chartGradient)"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Filled area under line */}
+                  <polygon
+                    points="50,120 110,95 170,80 230,90 290,65 350,55 410,70 470,45 530,35 590,60 650,40 710,50 760,30 760,200 50,200"
+                    fill="url(#chartGradient)"
+                  />
+
+                  {/* Data points with glow */}
+                  {[
+                    { x: 50, y: 120 },
+                    { x: 110, y: 95 },
+                    { x: 170, y: 80 },
+                    { x: 230, y: 90 },
+                    { x: 290, y: 65 },
+                    { x: 350, y: 55 },
+                    { x: 410, y: 70 },
+                    { x: 470, y: 45 },
+                    { x: 530, y: 35 },
+                    { x: 590, y: 60 },
+                    { x: 650, y: 40 },
+                    { x: 710, y: 50 },
+                    { x: 760, y: 30 },
+                  ].map((point, idx) => (
+                    <g key={idx}>
+                      <circle cx={point.x} cy={point.y} r="4" fill="hsl(280, 100%, 60%)" opacity="0.5" />
+                      <circle cx={point.x} cy={point.y} r="2.5" fill="hsl(280, 100%, 70%)" />
+                    </g>
+                  ))}
+
+                  {/* X-axis labels */}
+                  <text x="50" y="190" fontSize="12" textAnchor="middle" fill="hsla(280, 30%, 50%, 0.6)">Day 1</text>
+                  <text x="760" y="190" fontSize="12" textAnchor="middle" fill="hsla(280, 30%, 50%, 0.6)">Day 30</text>
+                </svg>
+              </div>
+
+              {/* Trajectory Stats */}
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                <div className="p-3 rounded-lg bg-purple-900/30 border border-purple-400/20">
+                  <p className="text-xs text-purple-400/60 font-mono mb-1">PEAK PERFORMANCE</p>
+                  <p className="text-lg font-display font-bold text-purple-300">{data?.peakDay || 'Day 30'} • {data?.peakPoints || '2,800'} pts</p>
+                </div>
+                <div className="p-3 rounded-lg bg-purple-900/30 border border-purple-400/20">
+                  <p className="text-xs text-purple-400/60 font-mono mb-1">AVG. DAILY GAIN</p>
+                  <p className="text-lg font-display font-bold text-purple-300">+{data?.avgDailyGain || '120'} pts/day</p>
+                </div>
               </div>
             </div>
-          </GlassPanel>
-        </motion.div>
+          </div>
+        </motion.section>
 
         {/* Weekly Breakdown Charts - 4 Weeks */}
         <motion.div
