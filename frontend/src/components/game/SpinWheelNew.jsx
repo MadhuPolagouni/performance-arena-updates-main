@@ -13,17 +13,18 @@ import FloatingBalloons from "./FloatingBalloons";
 import { createPortal } from "react-dom";
 
 /**
- * Spin Wheel Prizes Configuration
+ * Backend Spin Wheel Prizes Configuration
+ * Maps backend rewards to visual wheel segments with colors and icons
  */
 const PRIZE_CONFIG = [
-  { label: "Cheers", value: "cheers", icon: Gift, color: "#ff4d4d", points: 500, xp: 25 },
-  { label: "Headset", value: "headset", icon: Sparkles, color: "#4da6ff", points: 1000, xp: 50 },
-  { label: "Coffee Mug", value: "coffee", icon: Star, color: "#ffcc00", points: 300, xp: 15 },
-  { label: "WFH Perks", value: "wfh", icon: Crown, color: "#ff66ff", points: 750, xp: 35 },
-  { label: "GD T-Shirt", value: "tshirt", icon: Box, color: "#66ff66", points: 250, xp: 10 },
-  { label: "Sipper", value: "sipper", icon: Gift, color: "#ff9933", points: 400, xp: 20 },
-  { label: "Lucky Dip", value: "lucky", icon: Trophy, color: "#9b59fb", points: 600, xp: 30 },
-  { label: "Shopping Voucher", value: "voucher", icon: Zap, color: "#2afcd5", points: 800, xp: 40 },
+  { label: "+500", sublabel: "PTS", icon: Star, color: "#ff4d4d", points: 500, xp: 0, tone: "primary" },
+  { label: "+100", sublabel: "XP", icon: Zap, color: "#4da6ff", points: 0, xp: 100, tone: "secondary" },
+  { label: "x2", sublabel: "Multiplier", icon: Crown, color: "#ffcc00", points: 200, xp: 50, tone: "primary" },
+  { label: "+250", sublabel: "PTS", icon: Star, color: "#ff66ff", points: 250, xp: 0, tone: "primary" },
+  { label: "Mystery", sublabel: "Box", icon: Box, color: "#66ff66", points: 300, xp: 75, tone: "secondary" },
+  { label: "x3", sublabel: "Multiplier", icon: Crown, color: "#ff9933", points: 400, xp: 100, tone: "primary" },
+  { label: "+50", sublabel: "XP", icon: Zap, color: "#9b59fb", points: 0, xp: 50, tone: "secondary" },
+  { label: "Elite", sublabel: "Gift", icon: Gift, color: "#2afcd5", points: 1000, xp: 200, tone: "accent" },
 ];
 
 /**
@@ -139,10 +140,17 @@ export const SpinWheelComponent = ({
         throw new Error(spinResult?.error?.message || 'Spin failed');
       }
 
-      // Get winning segment index
-      const winningIndex = spinResult.segmentIndex ?? Math.floor(Math.random() * segmentCount);
+      // Get winning segment index from backend
+      const winningIndex = spinResult.segmentIndex ?? 0;
+      
+      // Validate segment index is within bounds
+      if (winningIndex < 0 || winningIndex >= segmentCount) {
+        throw new Error('Invalid segment index from server');
+      }
+
+      // Calculate rotation to land on winning segment
       const baseSpin = 5 + Math.floor(Math.random() * 3); // 5-8 full rotations
-      const finalRotation = baseSpin * 360 + (segmentCount - winningIndex) * segmentAngle;
+      const finalRotation = baseSpin * 360 + (segmentCount - 1 - winningIndex) * segmentAngle + segmentAngle / 2;
 
       setRotation(prevRotation => prevRotation + finalRotation);
       setSelectedIndex(winningIndex);
@@ -153,20 +161,37 @@ export const SpinWheelComponent = ({
         spinAudioRef.current.play().catch(() => {}); // Ignore audio errors
       }
 
-      // Wait for spin animation to complete
+      // Wait for spin animation to complete (3.5 seconds)
       setTimeout(() => {
-        const prize = PRIZE_CONFIG[winningIndex];
-        setResult({
+        // Map backend reward to visual prize config
+        const backendReward = spinResult.reward;
+        const visualPrize = PRIZE_CONFIG[winningIndex];
+        
+        // Merge backend reward data with visual prize data
+        const mergedResult = {
           ...spinResult,
-          prize,
+          prize: {
+            ...visualPrize,
+            // Override with backend data if available
+            ...(backendReward && {
+              label: backendReward.label,
+              sublabel: backendReward.sublabel || '',
+              points: backendReward.points || 0,
+              xp: backendReward.xp || 0,
+            })
+          },
           winningIndex,
-        });
+          backendRewardData: backendReward,
+        };
+        
+        setResult(mergedResult);
         setShowResult(true);
         createConfetti(100);
       }, 3500); // Match spin duration
 
     } catch (err) {
-      setError(err.message);
+      console.error('Spin error:', err);
+      setError(err.message || 'Failed to spin wheel');
       setIsSpinning(false);
     }
   }, [canSpin, tokenCost, segmentCount, segmentAngle, onSpin, createConfetti]);
@@ -176,18 +201,24 @@ export const SpinWheelComponent = ({
     if (!result || !result.prize) return;
 
     try {
-      const claimResult = await onClaimReward(result.prize);
+      // Send the backend reward data for claiming
+      const rewardData = result.backendRewardData || result.prize;
+      const claimResult = await onClaimReward(rewardData);
+      
       if (claimResult?.success) {
         onClaimSuccess?.();
-        // Reset for next spin
+        // Reset for next spin after a short delay to show success
         setTimeout(() => {
           setShowResult(false);
           setResult(null);
           setIsSpinning(false);
         }, 1500);
+      } else {
+        throw new Error(claimResult?.error?.message || 'Failed to claim reward');
       }
     } catch (err) {
-      setError(err.message);
+      console.error('Claim error:', err);
+      setError(err.message || 'Failed to claim reward');
     }
   }, [result, onClaimReward, onClaimSuccess]);
 
@@ -383,7 +414,7 @@ export const SpinWheelComponent = ({
 
               {/* Result Modal */}
               <AnimatePresence>
-                {showResult && result && (
+                {showResult && result && result.prize && (
                   <motion.div
                     className="fixed inset-0 z-[60] flex items-center justify-center"
                     initial={{ opacity: 0 }}
@@ -406,9 +437,14 @@ export const SpinWheelComponent = ({
                         transition={{ duration: 1, repeat: Infinity }}
                       >
                         <h2 className="text-4xl font-bold text-white mb-4">🎉 Congratulations!</h2>
-                        <div className="text-6xl mb-4">{result.prize.icon === Gift ? '🎁' : '⭐'}</div>
-                        <h3 className="text-3xl font-bold text-yellow-400 mb-2">{result.prize.label}</h3>
-                        <p className="text-white/80 mb-6">You won {result.prize.points} points!</p>
+                        <div className="text-6xl mb-4">🎁</div>
+                        <h3 className="text-3xl font-bold text-yellow-400 mb-2">
+                          {result.prize.label} {result.prize.sublabel}
+                        </h3>
+                        <div className="text-white/80 mb-6 text-lg">
+                          {result.prize.points > 0 && <p>+ {result.prize.points} Points</p>}
+                          {result.prize.xp > 0 && <p>+ {result.prize.xp} XP</p>}
+                        </div>
                         
                         <motion.button
                           onClick={handleClaimReward}
