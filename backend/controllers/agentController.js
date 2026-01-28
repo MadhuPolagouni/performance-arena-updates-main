@@ -306,6 +306,9 @@ class AgentController {
 
       const response = {
         totalPoints: guide.calculated.points,
+        totalXPEarned: guide.calculated.xp || 0,
+        totalXPSEarned: guide.calculated.xps || 0,
+        totalPointsGained: Math.floor(guide.calculated.points * 0.3),
         currentStreak: guide.streak,
         avgScore: avgScore.toFixed(2),
         rank: rank,
@@ -389,7 +392,14 @@ class AgentController {
           nps: generateKpiData('nps', 72)
         },
         // Weekly breakdown data
-        weeklyBreakdowns: weeklyBreakdowns
+        weeklyBreakdowns: weeklyBreakdowns,
+        // XPS data
+        rewardsClaimed: Math.floor(Math.random() * 15) + 5,
+        xpsData: {
+          dailyXPS: generateKpiData('xps', 35),
+          weeklyXPS: Math.floor(Math.random() * 500) + 200,
+          monthlyXPS: Math.floor(Math.random() * 2000) + 800
+        }
       };
 
       res.json(response);

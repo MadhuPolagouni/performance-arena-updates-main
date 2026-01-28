@@ -107,7 +107,7 @@ router.post('/:agentId/playzone/spin', (req, res) => {
     const wonReward = rewards[randomIndex];
     
     // Deduct tokens (using points as tokens)
-    if (!guide.calculated) guide.calculated = { points: 0, xp: 0 };
+    if (!guide.calculated) guide.calculated = { points: 0, xp: 0, xps: 0 };
     guide.calculated.points = Math.max(0, (guide.calculated.points || 0) - tokenCost);
     
     res.json({ 
@@ -117,6 +117,8 @@ router.post('/:agentId/playzone/spin', (req, res) => {
       reward: wonReward,
       tokensDeducted: tokenCost,
       newTokenBalance: guide.calculated.points,
+      currentXPS: guide.calculated.xps || 0,
+      xpsMultiplier: 1,
       message: `You won ${wonReward.label} ${wonReward.sublabel}!`
     });
   } catch (error) {
@@ -124,7 +126,7 @@ router.post('/:agentId/playzone/spin', (req, res) => {
   }
 });
 
-// Claim spin wheel reward - records points/xp to agent
+// Claim spin wheel reward - records points/xp/xps to agent
 router.post('/:agentId/playzone/spin/claim', (req, res) => {
   try {
     const { agentId } = req.params;
@@ -135,22 +137,28 @@ router.post('/:agentId/playzone/spin/claim', (req, res) => {
       return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Agent not found' } });
     }
     
-    if (!guide.calculated) guide.calculated = { points: 0, xp: 0 };
+    if (!guide.calculated) guide.calculated = { points: 0, xp: 0, xps: 0 };
     
     // Add points and XP from the reward
     const pointsWon = reward?.points || 0;
     const xpWon = reward?.xp || 0;
     
+    // Calculate XPS (Experience Points Score) - typically 10% of points + 5% of XP
+    const xpsWon = Math.floor(pointsWon * 0.1 + xpWon * 0.05);
+    
     guide.calculated.points += pointsWon;
     guide.calculated.xp += xpWon;
+    guide.calculated.xps = (guide.calculated.xps || 0) + xpsWon;
     
     res.json({ 
       success: true, 
       reward: `${reward?.label || ''} ${reward?.sublabel || ''}`.trim(),
       pointsAdded: pointsWon,
       xpAdded: xpWon,
+      xpsAdded: xpsWon,
       newBalance: guide.calculated.points,
       newXP: guide.calculated.xp,
+      newXPS: guide.calculated.xps,
       message: `${reward?.label || 'Reward'} ${reward?.sublabel || ''} claimed successfully!`
     });
   } catch (error) {

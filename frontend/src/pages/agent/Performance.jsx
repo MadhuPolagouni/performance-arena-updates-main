@@ -268,7 +268,7 @@ const Performance = () => {
 
             <div className="relative z-10">
               {/* Metrics Summary */}
-              <div className="grid grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -299,6 +299,22 @@ const Performance = () => {
                     +{data?.totalXPEarned || 0}
                   </p>
                   <p className="text-xs text-cyan-400/60 mt-1">Level {data?.currentLevel || 1} Progress</p>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.28 }}
+                  className="p-4 rounded-lg bg-gradient-to-br from-violet-900/40 to-violet-900/20 border border-violet-400/30"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-violet-400 font-mono tracking-wider">XPS EARNED</span>
+                    <Sparkles className="w-4 h-4 text-violet-400" />
+                  </div>
+                  <p className="text-3xl font-display font-bold text-violet-400">
+                    +{data?.totalXPSEarned || 0}
+                  </p>
+                  <p className="text-xs text-violet-400/60 mt-1">Experience Score</p>
                 </motion.div>
 
                 <motion.div
