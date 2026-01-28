@@ -115,7 +115,7 @@ function SpinningWheel() {
     `;
 
     try {
-      const response = await fetch('https://project-wheel-backend.onrender.com/api/send-email', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

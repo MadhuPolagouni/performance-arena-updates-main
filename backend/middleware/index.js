@@ -5,31 +5,37 @@ const rateLimit = require('express-rate-limit');
 const logger = morgan('combined');
 
 /**
- * Parse CORS origins from env
- */
-const allowedOrigins ="http://localhost:3000"
- 
-
-console.log('✅ CORS Allowed Origins:', allowedOrigins);
-
-/**
  * CORS configuration
+ * Allow localhost/127.0.0.1 for all ports (development & docker)
+ * Nginx/reverse proxy handles origin validation in production
  */
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow server-to-server & tools (Postman, curl)
+    // Allow server-to-server & tools (Postman, curl, nginx proxy)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
+    // Allow localhost and 127.0.0.1 for all ports
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
       return callback(null, true);
     }
 
-    return callback(new Error(`❌ CORS blocked: ${origin}`));
+    // Allow GitHub Codespaces
+    if (origin.includes('.app.github.dev')) {
+      return callback(null, true);
+    }
+
+    // Log and allow other origins for development
+    console.log('[CORS] Allowing origin:', origin);
+    return callback(null, true);
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID'],
   credentials: true,
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 };
+
+console.log('✅ CORS configured for development/docker deployment');
 
 /**
  * Rate limiter
