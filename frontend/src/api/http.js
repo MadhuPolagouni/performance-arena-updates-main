@@ -1,7 +1,9 @@
 
 import { toast } from "sonner";
 
-let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+// Use relative paths so nginx proxy can handle routing
+// This works in both development (with vite proxy) and production (with nginx proxy)
+let API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 
 if (!API_BASE_URL) {
