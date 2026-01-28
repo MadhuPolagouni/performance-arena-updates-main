@@ -7,7 +7,7 @@ const logger = morgan('combined');
 /**
  * Parse CORS origins from env
  */
-const allowedOrigins = process.env.CORS_ORIGINS
+const allowedOrigins = process.env.CORS_ORIGINS ||"http://localhost:3000"
   ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
   : [];
 
