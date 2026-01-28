@@ -41,7 +41,19 @@ const RewardsAndAchievements = () => {
   const [activeCardIndex, setActiveCardIndex] = useState(0);
   const [revealingCard, setRevealingCard] = useState(null);
   const [relicsType, setRelicsType] = useState("scratch"); // "scratch" or "wheel"
+  const [scratchCatalogRewards, setScratchCatalogRewards] = useState([]);
+  const [wheelCatalogRewards, setWheelCatalogRewards] = useState([]);
   const carouselRef = useRef(null);
+
+  // Split catalog rewards equally between scratch and wheel
+  useEffect(() => {
+    if (rewardsData?.rewards && rewardsData.rewards.length > 0) {
+      const allRewards = rewardsData.rewards;
+      const midpoint = Math.ceil(allRewards.length / 2);
+      setScratchCatalogRewards(allRewards.slice(0, midpoint));
+      setWheelCatalogRewards(allRewards.slice(midpoint));
+    }
+  }, [rewardsData?.rewards]);
 
   // Helper function to calculate tier based on percentile
   const calculateTier = (percentile) => {
@@ -679,202 +691,130 @@ const RewardsAndAchievements = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {relicsType === "scratch" && (
               <>
-                {/* Scratch Cards Display - Sleek Card Design */}
-                {(rewardsData?.scratchCards || []).length === 0 ? (
+                {/* Scratch Cards Display - Split Catalog Rewards */}
+                {scratchCatalogRewards.length === 0 ? (
                   <div className="col-span-full text-center py-12">
                     <CreditCard className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
-                    <p className="text-sm text-muted-foreground">No scratch cards yet</p>
+                    <p className="text-sm text-muted-foreground">No scratch cards available</p>
                   </div>
                 ) : (
-                  (rewardsData?.scratchCards || []).map((card, idx) => (
-                    <motion.div
-                      key={card.id}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.08 }}
-                      whileHover={{ y: -8, scale: 1.02 }}
-                      className={cn(
-                        "relative h-48 rounded-2xl border overflow-hidden transition-all cursor-pointer group",
-                        "bg-gradient-to-br shadow-xl hover:shadow-2xl",
-                        card.status === "pending"
-                          ? card.cardDesign?.gradient 
-                            ? `from-blue-600 to-cyan-500 border-blue-400/30`
-                            : "from-yellow-500 to-orange-500 border-yellow-400/30"
-                          : card.status === "scratched"
-                          ? "from-emerald-600 to-teal-500 border-emerald-400/30"
-                          : "from-slate-600 to-slate-500 border-slate-400/20 opacity-60"
-                      )}
-                    >
-                      {/* Animated Background Gradient */}
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
-                      />
+                  scratchCatalogRewards.map((reward, idx) => {
+                    const rarity = rarityConfig[reward.rarity] || rarityConfig.common;
+                    return (
+                      <motion.div 
+                        key={reward.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        whileHover={{ scale: 1.03, y: -5 }}
+                        className={cn(
+                          "relative h-48 rounded-2xl border overflow-hidden transition-all cursor-pointer group",
+                          "bg-gradient-to-br shadow-xl hover:shadow-2xl",
+                          "from-secondary/30 to-blue-500/30 border-secondary/40"
+                        )}
+                      >
+                        {/* Animated Background Gradient */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
 
-                      {/* Corner Accent Glow */}
-                      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:bg-white/30 transition-all" />
+                        {/* Corner Accent Glow */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:bg-white/30 transition-all" />
 
-                      {/* Content Container */}
-                      <div className="relative z-10 h-full flex flex-col p-5">
-                        {/* Top Section - Icon & Expiry */}
-                        <div className="flex items-start justify-between mb-3">
-                          <motion.div
-                            className="text-4xl"
-                            animate={{ scale: [1, 1.1, 1], rotate: [0, 3, -3, 0] }}
-                            transition={{ duration: 4, repeat: Infinity }}
-                          >
-                            {card.cardDesign?.icon || "🎁"}
-                          </motion.div>
+                        {/* Content Container */}
+                        <div className="relative z-10 h-full flex flex-col p-5 items-center justify-center text-center">
+                          {/* Reward Icon */}
+                          <div className="text-4xl mb-3">{reward.image || '🎁'}</div>
                           
-                          {/* Status Badge */}
-                          <AnimatePresence>
-                            {card.status === "pending" && card.expiresIn && (
-                              <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/25 text-white backdrop-blur-md border border-white/30 whitespace-nowrap"
-                              >
-                                {card.expiresIn}
-                              </motion.span>
-                            )}
-                            {card.status === "scratched" && (
-                              <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/30 text-white backdrop-blur-md border border-white/40 flex items-center gap-1"
-                              >
-                                <Check className="w-3 h-3" />
-                                {card.points}
-                              </motion.span>
-                            )}
-                            {card.status === "expired" && (
-                              <motion.span
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-red-500/40 text-white backdrop-blur-md border border-red-400/50"
-                              >
-                                EXPIRED
-                              </motion.span>
-                            )}
-                          </AnimatePresence>
+                          {/* Title */}
+                          <h4 className="font-bold text-white text-base mb-2">{reward.title}</h4>
+                          
+                          {/* Points */}
+                          <div className="flex items-center gap-1 text-accent mb-2">
+                            <Star className="w-4 h-4" />
+                            <span className="font-bold">{reward.points?.toLocaleString() || 0} pts</span>
+                          </div>
+                          
+                          {/* Rarity Badge */}
+                          <motion.span
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={cn("text-[9px] font-bold px-2 py-1 rounded-full", rarity.labelColor, rarity.bgColor)}
+                          >
+                            {rarity.label}
+                          </motion.span>
                         </div>
-
-                        {/* Middle Section - Card Details */}
-                        <div className="flex-1 flex flex-col">
-                          <h4 className="font-bold text-white text-base mb-1 tracking-wide">{card.name}</h4>
-                          {card.cardDesign?.hint && (
-                            <p className="text-xs text-white/80 leading-relaxed">{card.cardDesign.hint}</p>
-                          )}
-                        </div>
-
-                        {/* Bottom Section - Date & Action */}
-                        <div className="flex items-end justify-between pt-2">
-                          <p className="text-[10px] text-white/70 font-mono">{card.date}</p>
-                          {card.status === "pending" ? (
-                            <motion.div
-                              animate={{ scale: [1, 1.1, 1] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="text-xs font-bold text-white"
-                            >
-                              TAP →
-                            </motion.div>
-                          ) : card.status === "scratched" ? (
-                            <div className="text-xs font-bold text-white flex items-center gap-1">
-                              <Check className="w-3 h-3" /> Claimed
-                            </div>
-                          ) : null}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))
+                      </motion.div>
+                    );
+                  })
                 )}
               </>
             )}
 
             {relicsType === "wheel" && (
               <>
-                {/* Spin Wheel Wins Display - Sleek Card Grid */}
-                <div className="text-xs text-muted-foreground text-center py-3 font-semibold col-span-full">Last 30 days - Spin Wins</div>
-                {(rewardsData?.spinWins || []).length === 0 ? (
+                {/* Spin Wheel Wins Display - Split Catalog Rewards */}
+                {wheelCatalogRewards.length === 0 ? (
                   <div className="col-span-full text-center py-12">
                     <Target className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
-                    <p className="text-sm text-muted-foreground">No spin wins yet</p>
+                    <p className="text-sm text-muted-foreground">No wheel rewards available</p>
                   </div>
                 ) : (
-                  (rewardsData?.spinWins || []).map((win, idx) => (
-                    <motion.div
-                      key={win.id}
-                      initial={{ opacity: 0, y: 15 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: idx * 0.05 }}
-                      whileHover={{ y: -8, scale: 1.02 }}
-                      className={cn(
-                        "relative h-48 rounded-2xl border overflow-hidden transition-all cursor-pointer group",
-                        "bg-gradient-to-br shadow-xl hover:shadow-2xl",
-                        win.type === "points"
-                          ? "from-cyan-600 to-blue-500 border-cyan-400/30"
-                          : win.type === "spin"
-                          ? "from-purple-600 to-pink-500 border-purple-400/30"
-                          : "from-amber-600 to-yellow-500 border-amber-400/30"
-                      )}
-                    >
-                      {/* Animated Background Gradient */}
+                  wheelCatalogRewards.map((reward, idx) => {
+                    const rarity = rarityConfig[reward.rarity] || rarityConfig.common;
+                    return (
                       <motion.div
-                        className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
-                      />
+                        key={reward.id}
+                        initial={{ opacity: 0, y: 15 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        whileHover={{ y: -8, scale: 1.02 }}
+                        className={cn(
+                          "relative h-48 rounded-2xl border overflow-hidden transition-all cursor-pointer group",
+                          "bg-gradient-to-br shadow-xl hover:shadow-2xl",
+                          "from-primary/30 to-purple-500/30 border-primary/40"
+                        )}
+                      >
+                        {/* Animated Background Gradient */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
 
-                      {/* Corner Accent Glow */}
-                      <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:bg-white/30 transition-all" />
+                        {/* Corner Accent Glow */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 rounded-full blur-3xl group-hover:bg-white/30 transition-all" />
 
-                      {/* Content Container */}
-                      <div className="relative z-10 h-full flex flex-col p-5">
-                        {/* Top Section - Icon */}
-                        <div className="flex items-start justify-between mb-3">
+                        {/* Content Container */}
+                        <div className="relative z-10 h-full flex flex-col p-5 items-center justify-center text-center">
+                          {/* Reward Icon */}
                           <motion.div
-                            className="text-4xl"
-                            animate={{ scale: [1, 1.15, 1], rotate: [0, 360] }}
+                            className="text-4xl mb-3"
+                            animate={{ rotate: [0, 360] }}
                             transition={{ duration: 3, repeat: Infinity }}
                           >
-                            {win.type === "points" ? "⚡" : win.type === "spin" ? "🎪" : "🎁"}
+                            {reward.image || '🎯'}
                           </motion.div>
                           
-                          {/* Points Badge */}
-                          {win.points > 0 && (
-                            <motion.span
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-white/30 text-white backdrop-blur-md border border-white/40 flex items-center gap-1"
-                            >
-                              +{win.points}
-                            </motion.span>
-                          )}
-                        </div>
-
-                        {/* Middle Section - Reward Details */}
-                        <div className="flex-1 flex flex-col">
-                          <h4 className="font-bold text-white text-base mb-2 tracking-wide">{win.reward}</h4>
-                          <p className="text-xs text-white/80">
-                            {win.type === "points"
-                              ? "Points reward from spin"
-                              : win.type === "spin"
-                              ? "Bonus spin token"
-                              : "Mystery reward"}
-                          </p>
-                        </div>
-
-                        {/* Bottom Section - Date */}
-                        <div className="flex items-end justify-between pt-2">
-                          <p className="text-[10px] text-white/70 font-mono">Claimed {win.claimedAt}</p>
-                          <motion.div
-                            animate={{ rotate: [0, 360] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                            className="text-xs font-bold text-white"
+                          {/* Title */}
+                          <h4 className="font-bold text-white text-base mb-2">{reward.title}</h4>
+                          
+                          {/* Points */}
+                          <div className="flex items-center gap-1 text-primary mb-2">
+                            <Star className="w-4 h-4" />
+                            <span className="font-bold">{reward.points?.toLocaleString() || 0} pts</span>
+                          </div>
+                          
+                          {/* Rarity Badge */}
+                          <motion.span
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={cn("text-[9px] font-bold px-2 py-1 rounded-full", rarity.labelColor, rarity.bgColor)}
                           >
-                            🎯
-                          </motion.div>
+                            {rarity.label}
+                          </motion.span>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))
+                      </motion.div>
+                    );
+                  })
                 )}
               </>
             )}
