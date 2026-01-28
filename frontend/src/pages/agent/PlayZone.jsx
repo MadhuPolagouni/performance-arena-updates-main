@@ -152,8 +152,8 @@ const PlayZone = () => {
   if (loading) return <PlayzoneSkeleton />;
 
   const activeStreak = data?.streak || 7;
-  const totalPoints = data?.totalPoints || 12450;
-  const totalXPS = data?.totalXPS || 8500;
+  const totalPoints = data?.totalPoints || 0;
+  const totalXPS = data?.totalXPS || 0;
   const scratchReward = data?.scratchReward || "+500 PTS";
   const tokensNeeded = data?.tokensNeeded || 250; // Updated to 250 points for spin wheel unlock
   const weeklyChallenges = data?.weeklyChallenges || [];
@@ -216,19 +216,33 @@ const PlayZone = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-wrap items-center justify-between gap-3"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
-              <Crosshair className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30">
+                <Crosshair className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                <div>
+                  <h1 className="text-lg lg:text-xl font-display text-foreground tracking-wider">
+                    BATTLE CONSOLE
+                  </h1>
+                  <p className="text-[10px] font-oxanium text-muted-foreground tracking-wider">
+                    <span className="text-secondary">&gt;</span> Execute missions. Claim rewards.
+                  </p>
+                </div>
+                
+                {/* Synced XP and Points beside Title */}
+                <div className="hidden md:flex items-center gap-3 pl-4 border-l border-border/50">
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-xs font-display text-primary">{Math.round(totalXPS).toLocaleString()} XP</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Star className="w-3.5 h-3.5 text-accent" />
+                    <span className="text-xs font-display text-accent">{Math.round(totalPoints).toLocaleString()} PTS</span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              <h1 className="text-lg lg:text-xl font-display text-foreground tracking-wider">
-                BATTLE CONSOLE
-              </h1>
-              <p className="text-[10px] font-oxanium text-muted-foreground tracking-wider">
-                <span className="text-secondary">&gt;</span> Execute missions. Claim rewards.
-              </p>
-            </div>
-          </div>
 
           {/* Status Bar */}
           <div className="flex items-center gap-2">
