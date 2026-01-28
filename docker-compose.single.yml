@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: performance-arena
+    ports:
+      - "${FRONTEND_PORT:-8080}:8080"
+      - "${BACKEND_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      # Add other environment variables as needed
+      # DATABASE_URL: ${DATABASE_URL}
+      # JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./backend/data:/app/backend/data
+      - ./logs:/var/log/supervisor
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+# Usage:
+# docker-compose up -d              # Start the application
+# docker-compose down               # Stop and remove container
+# docker-compose ps                 # Check status
+# docker-compose logs -f            # View logs
+# docker-compose restart            # Restart container

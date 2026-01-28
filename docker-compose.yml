@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: performance-arena-backend
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+      # Add other environment variables as needed
+      # DATABASE_URL: ${DATABASE_URL}
+      # JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./backend/data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 40s
+    networks:
+      - performance-arena-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: performance-arena-frontend
+    ports:
+      - "${FRONTEND_PORT:-8080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    networks:
+      - performance-arena-network
+
+networks:
+  performance-arena-network:
+    driver: bridge
+
+# Usage:
+# docker-compose up                 # Start both services
+# docker-compose up -d              # Start in detached mode
+# docker-compose down               # Stop and remove containers
+# docker-compose ps                 # Check status
+# docker-compose logs -f backend    # View backend logs
+# docker-compose logs -f frontend   # View frontend logs
