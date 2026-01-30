@@ -75,37 +75,8 @@ const ManagerOverview = () => {
         {/* Left Column */}
         <div className="space-y-6">
           {/* Key Metrics Row */}
-          <div className="grid sm:grid-cols-4 gap-4">
-            {/* Team Health Score */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-5 rounded-xl glass-card border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Team Health Score</span>
-                <div className="w-8 h-8 rounded-lg bg-success/20 flex items-center justify-center">
-                  <Target className="w-4 h-4 text-success" />
-                </div>
-              </div>
-              <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>{Math.min(100, Math.round(data.teamHealthScore % 100 || data.teamHealthScore))}</span>
-                <span className="text-lg text-muted-foreground">/100</span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                {data.teamHealthChange >= 0 ? (
-                  <TrendingUp className="w-4 h-4 text-success" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-destructive" />
-                )}
-                <span className={`text-sm ${data.teamHealthChange >= 0 ? 'text-success' : 'text-destructive'}`}>
-                  {data.teamHealthChange >= 0 ? '+' : ''}{data.teamHealthChange}%
-                </span>
-                <span className="text-xs text-muted-foreground">vs. previous period</span>
-              </div>
-            </motion.div>
-            
-            {/* Team XPS (includes Team Health adjustment) */}
+          <div className="grid sm:grid-cols-3 gap-4">
+            {/* Team XPS */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -119,18 +90,9 @@ const ManagerOverview = () => {
                 </div>
               </div>
               <div className="flex items-baseline gap-2">
-                {/* Compute teamXps: base + health contribution */}
                 <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
-                  {(() => {
-                    const base = data.teamXps || 0;
-                    const health = typeof data.teamHealthScore === 'number' ? data.teamHealthScore : 0;
-                    const healthBonus = Math.floor(health * 2); // health contributes as multiplier (adjustable)
-                    return (base + healthBonus).toLocaleString();
-                  })()}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="text-xs text-muted-foreground">Includes Team Health bonus</span>
+                  {(data.teamXps || 0).toLocaleString()
+                }</span>
               </div>
             </motion.div>
 
@@ -372,18 +334,18 @@ const ManagerOverview = () => {
               <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
             </div>
             <div className="space-y-3">
-              {data.liveFeed.map((item, idx) => (
+              {(data.teamRewards && data.teamRewards.length ? data.teamRewards : data.liveFeed).map((item, idx) => (
                 <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
                   <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-                    {item.name[0]}
+                    {item.name ? item.name[0] : (item.agent || 'G')[0]}
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-foreground">
-                      <span className="font-medium">{item.name}</span>{" "}
-                      <span className="text-muted-foreground">{item.action}</span>{" "}
-                      {item.value && <span className="text-primary font-medium">{item.value}</span>}
+                      <span className="font-medium">{item.name || item.agent}</span>{" "}
+                      <span className="text-muted-foreground">won</span>{" "}
+                      <span className="text-primary font-medium">{item.reward}</span>
                     </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{item.time} • {item.dept}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.time || item.date || 'just now'} • {item.context || item.dept || 'Team'}</p>
                   </div>
                 </div>
               ))}

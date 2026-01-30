@@ -153,6 +153,8 @@ const ContestTemplateDesigner = ({
       backgroundColor: "#1a1a2e",
     },
     metrics: initialData?.metrics || [],
+    qualifiers: initialData?.qualifiers || [],
+    slabs: initialData?.slabs || [],
     rewards: initialData?.rewards || [],
   });
 
@@ -186,27 +188,35 @@ const ContestTemplateDesigner = ({
   };
 
   // Metrics management
-  const addMetric = (suggestion = null) => {
-    const newMetric = {
-      id: Date.now(),
-      name: suggestion?.name || "",
-      target: suggestion?.target || "",
-      weightage: suggestion?.weightage || 0,
-    };
-    const updated = [...formData.metrics, newMetric];
-    updateFormData("metrics", updated);
+  // Qualifiers & Slabs management (replaces metric weightage flow)
+  const addQualifier = () => {
+    const newQ = { id: Date.now(), name: '', operator: '>=', target: '' };
+    updateFormData('qualifiers', [...formData.qualifiers, newQ]);
   };
 
-  const updateMetric = (id, field, value) => {
-    const updated = formData.metrics.map((m) =>
-      m.id === id ? { ...m, [field]: value } : m
-    );
-    updateFormData("metrics", updated);
+  const updateQualifier = (id, field, value) => {
+    const updated = formData.qualifiers.map(q => q.id === id ? { ...q, [field]: value } : q);
+    updateFormData('qualifiers', updated);
   };
 
-  const deleteMetric = (id) => {
-    const updated = formData.metrics.filter((m) => m.id !== id);
-    updateFormData("metrics", updated);
+  const deleteQualifier = (id) => {
+    const updated = formData.qualifiers.filter(q => q.id !== id);
+    updateFormData('qualifiers', updated);
+  };
+
+  const addSlab = () => {
+    const newS = { id: Date.now(), metric: '', lower: '', upper: '', rewardTitle: '' };
+    updateFormData('slabs', [...formData.slabs, newS]);
+  };
+
+  const updateSlab = (id, field, value) => {
+    const updated = formData.slabs.map(s => s.id === id ? { ...s, [field]: value } : s);
+    updateFormData('slabs', updated);
+  };
+
+  const deleteSlab = (id) => {
+    const updated = formData.slabs.filter(s => s.id !== id);
+    updateFormData('slabs', updated);
   };
 
   // Rewards management
@@ -246,8 +256,8 @@ const ContestTemplateDesigner = ({
     }
   };
 
-  // Calculate total weightage
-  const totalWeightage = formData.metrics.reduce((sum, m) => sum + (m.weightage || 0), 0);
+  // Deprecated metrics weightage (using qualifiers/slabs now)
+  const totalWeightage = 0;
 
   const handleSave = async (publish = false) => {
     try {
@@ -309,7 +319,7 @@ const ContestTemplateDesigner = ({
       case 2:
         return true; // Theme is optional with defaults
       case 3:
-        return formData.metrics.length > 0 && totalWeightage === 100;
+        return (formData.qualifiers || []).length >= 2;
       case 4:
         return formData.rewards.length > 0;
       case 5:
@@ -623,7 +633,7 @@ const ContestTemplateDesigner = ({
               </motion.div>
             )}
 
-            {/* Step 3: Performance Metrics */}
+            {/* Step 3: Performance Metrics (Qualifiers & Slabs) */}
             {step === 3 && (
               <motion.div
                 key="step-3"
@@ -632,119 +642,44 @@ const ContestTemplateDesigner = ({
                 exit={{ opacity: 0, x: -20 }}
                 className="space-y-6"
               >
-                {/* Weightage Indicator */}
                 <div className="p-4 rounded-xl bg-muted/20 border border-border/50">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-foreground">Total Weightage</span>
-                    <span className={cn(
-                      "text-lg font-bold",
-                      totalWeightage === 100 ? "text-success" : totalWeightage > 100 ? "text-destructive" : "text-warning"
-                    )}>
-                      {totalWeightage}%
-                    </span>
-                  </div>
-                  <div className="h-2 rounded-full bg-muted/50 overflow-hidden">
-                    <div
-                      className={cn(
-                        "h-full transition-all duration-300",
-                        totalWeightage === 100 ? "bg-success" : totalWeightage > 100 ? "bg-destructive" : "bg-warning"
-                      )}
-                      style={{ width: `${Math.min(totalWeightage, 100)}%` }}
-                    />
-                  </div>
-                  {totalWeightage !== 100 && (
-                    <p className="text-xs text-warning mt-2 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      Weightage must equal exactly 100%
-                    </p>
-                  )}
-                </div>
-
-                {/* Suggested Metrics */}
-                <div>
-                  <h3 className="text-sm font-semibold text-foreground mb-3">Quick Add Metrics</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {METRIC_SUGGESTIONS.map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => addMetric(suggestion)}
-                        className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors flex items-center gap-1"
-                      >
-                        <Plus className="w-3 h-3" />
-                        {suggestion.name}
-                      </button>
-                    ))}
+                  <h3 className="text-sm font-semibold text-foreground">Qualifiers</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Add qualifier conditions that determine who qualifies for the contest (minimum 2 qualifiers required).</p>
+                  <div className="mt-3 flex gap-2">
+                    <button onClick={addQualifier} className="px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-xs font-medium">Add Qualifier</button>
                   </div>
                 </div>
 
-                {/* Metrics List */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold text-foreground">Added Metrics</h3>
-                    <button
-                      onClick={() => addMetric()}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-xs font-medium hover:bg-primary/30 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Custom Metric
-                    </button>
-                  </div>
-
-                  {formData.metrics.length === 0 ? (
-                    <div className="text-center py-12 border-2 border-dashed border-border/50 rounded-xl">
-                      <Target className="w-12 h-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                      <p className="text-sm text-muted-foreground">No metrics added yet</p>
-                      <p className="text-xs text-muted-foreground mt-1">Add metrics from suggestions or create custom ones</p>
+                <div className="space-y-3">
+                  {formData.qualifiers.length === 0 ? (
+                    <div className="text-center py-8 border-2 border-dashed border-border/50 rounded-xl">
+                      <p className="text-sm text-muted-foreground">No qualifiers added yet. Add at least two qualifiers to proceed.</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      {formData.metrics.map((metric, idx) => (
-                        <GlassCard key={metric.id} className="p-4">
-                          <div className="grid md:grid-cols-4 gap-4 items-end">
-                            <div className="md:col-span-2">
-                              <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                Metric Name *
-                              </label>
-                              <input
-                                type="text"
-                                value={metric.name}
-                                onChange={(e) => updateMetric(metric.id, "name", e.target.value)}
-                                placeholder="e.g., Customer Satisfaction"
-                                className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm text-foreground"
-                              />
+                    <div className="space-y-2">
+                      {formData.qualifiers.map((q) => (
+                        <GlassCard key={q.id} className="p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+                            <div className="md:col-span-3">
+                              <label className="block text-xs text-muted-foreground mb-1">Qualifier Name</label>
+                              <input value={q.name} onChange={(e) => updateQualifier(q.id, 'name', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm" placeholder="e.g., Revenue Generated" />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                Target Value
-                              </label>
-                              <input
-                                type="text"
-                                value={metric.target}
-                                onChange={(e) => updateMetric(metric.id, "target", e.target.value)}
-                                placeholder="e.g., >= 95%"
-                                className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm text-foreground"
-                              />
+                              <label className="block text-xs text-muted-foreground mb-1">Operator</label>
+                              <select value={q.operator} onChange={(e) => updateQualifier(q.id, 'operator', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm">
+                                <option value=">=">&gt;=</option>
+                                <option value=">">&gt;</option>
+                                <option value="<=">&lt;=</option>
+                                <option value="<">&lt;</option>
+                                <option value="=">=</option>
+                              </select>
                             </div>
-                            <div className="flex items-end gap-2">
-                              <div className="flex-1">
-                                <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                  Weight (%)
-                                </label>
-                                <input
-                                  type="number"
-                                  value={metric.weightage}
-                                  onChange={(e) => updateMetric(metric.id, "weightage", parseInt(e.target.value) || 0)}
-                                  min="0"
-                                  max="100"
-                                  className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm text-foreground"
-                                />
-                              </div>
-                              <button
-                                onClick={() => deleteMetric(metric.id)}
-                                className="p-2 rounded-lg bg-destructive/20 text-destructive hover:bg-destructive/30 transition-colors"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                            <div>
+                              <label className="block text-xs text-muted-foreground mb-1">Target</label>
+                              <input value={q.target} onChange={(e) => updateQualifier(q.id, 'target', e.target.value)} placeholder="e.g., 10000 or >=95%" className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm" />
+                            </div>
+                            <div className="md:col-span-1">
+                              <button onClick={() => deleteQualifier(q.id)} className="w-full px-3 py-2 rounded-lg bg-destructive/20 text-destructive text-sm">Delete</button>
                             </div>
                           </div>
                         </GlassCard>
@@ -752,6 +687,53 @@ const ContestTemplateDesigner = ({
                     </div>
                   )}
                 </div>
+
+                {/* Slabs - shown once qualifiers >= 2 */}
+                {formData.qualifiers.length >= 2 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-sm font-semibold text-foreground">Slabs (optional)</h3>
+                      <button onClick={addSlab} className="px-3 py-1.5 rounded-lg bg-primary/20 text-primary text-xs font-medium">Add Slab</button>
+                    </div>
+
+                    {formData.slabs.length === 0 ? (
+                      <div className="text-center py-6 border-2 border-dashed border-border/50 rounded-xl">
+                        <p className="text-sm text-muted-foreground">No slabs defined. Add slabs to reward ranges driven by contest metrics.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {formData.slabs.map(s => (
+                          <GlassCard key={s.id} className="p-4">
+                            <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-end">
+                              <div className="md:col-span-2">
+                                <label className="block text-xs text-muted-foreground mb-1">Metric</label>
+                                <select value={s.metric} onChange={(e) => updateSlab(s.id, 'metric', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm">
+                                  <option value="">Select metric (qualifier)</option>
+                                  {formData.qualifiers.map(q => <option key={q.id} value={q.name}>{q.name}</option>)}
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block text-xs text-muted-foreground mb-1">Lower</label>
+                                <input value={s.lower} onChange={(e) => updateSlab(s.id, 'lower', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-xs text-muted-foreground mb-1">Upper</label>
+                                <input value={s.upper} onChange={(e) => updateSlab(s.id, 'upper', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm" />
+                              </div>
+                              <div>
+                                <label className="block text-xs text-muted-foreground mb-1">Reward Title</label>
+                                <input value={s.rewardTitle} onChange={(e) => updateSlab(s.id, 'rewardTitle', e.target.value)} className="w-full px-3 py-2 rounded-lg bg-muted/30 border border-border/50 text-sm" placeholder="e.g., Sipper" />
+                              </div>
+                              <div>
+                                <button onClick={() => deleteSlab(s.id)} className="w-full px-3 py-2 rounded-lg bg-destructive/20 text-destructive text-sm">Delete</button>
+                              </div>
+                            </div>
+                          </GlassCard>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </motion.div>
             )}
 
@@ -915,8 +897,12 @@ const ContestTemplateDesigner = ({
                           </p>
                         </div>
                         <div>
-                          <p className="text-xs opacity-75 mb-1">Metrics</p>
-                          <p className="font-bold text-lg">{formData.metrics.length}</p>
+                          <p className="text-xs opacity-75 mb-1">Qualifiers</p>
+                          <p className="font-bold text-lg">{(formData.qualifiers || []).length}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs opacity-75 mb-1">Slabs</p>
+                          <p className="font-bold text-lg">{(formData.slabs || []).length}</p>
                         </div>
                         <div>
                           <p className="text-xs opacity-75 mb-1">Reward Tiers</p>
@@ -937,21 +923,21 @@ const ContestTemplateDesigner = ({
                 {/* Summary Cards */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <GlassCard className="p-4">
-                    <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-primary" />
-                      Metrics Summary
-                    </h4>
-                    <div className="space-y-2">
-                      {formData.metrics.slice(0, 4).map((m, idx) => (
-                        <div key={idx} className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">{m.name || "Unnamed"}</span>
-                          <span className="text-foreground font-medium">{m.weightage}%</span>
-                        </div>
-                      ))}
-                      {formData.metrics.length > 4 && (
-                        <p className="text-xs text-muted-foreground">+{formData.metrics.length - 4} more...</p>
-                      )}
-                    </div>
+                      <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                        <Target className="w-4 h-4 text-primary" />
+                        Qualifiers Summary
+                      </h4>
+                      <div className="space-y-2">
+                        {(formData.qualifiers || []).slice(0,4).map((q, idx) => (
+                          <div key={idx} className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">{q.name || "Unnamed"}</span>
+                            <span className="text-foreground font-medium">{q.operator} {q.target}</span>
+                          </div>
+                        ))}
+                        {(formData.qualifiers || []).length > 4 && (
+                          <p className="text-xs text-muted-foreground">+{(formData.qualifiers || []).length - 4} more...</p>
+                        )}
+                      </div>
                   </GlassCard>
 
                   <GlassCard className="p-4">

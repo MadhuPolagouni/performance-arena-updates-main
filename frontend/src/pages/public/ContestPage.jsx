@@ -512,13 +512,13 @@ const ContestPage = () => {
           <div className="grid gap-4">
             {[
               { id: 'p1', contest: 'January Revenue Drive', winners: [
-                { name: 'Nitha Thatikonda', reward: 'Headset' },
-                { name: 'Ravi Kumar', reward: 'Sipper' },
-                { name: 'Anita Sharma', reward: 'Cheers (5000)' }
+                { name: 'Sayed Mahaboob Basha', reward: 'Headset' },
+                { name: 'Sanjay Kumar Sahu', reward: 'Sipper' },
+                { name: 'Mohammed Naseer', reward: 'Cheers (5000)' }
               ]},
               { id: 'p2', contest: 'Holiday Sprint', winners: [
-                { name: 'Siddharth Rao', reward: 'T-Shirt' },
-                { name: 'Meera Patel', reward: 'Coffee Mug' }
+                { name: 'Mounika Gadeela', reward: 'T-Shirt' },
+                { name: 'Sahaja Katrimala', reward: 'Coffee Mug' }
               ]}
             ].map((pc) => (
               <div key={pc.id} className="p-4 rounded-lg bg-muted/20 border border-border/30">

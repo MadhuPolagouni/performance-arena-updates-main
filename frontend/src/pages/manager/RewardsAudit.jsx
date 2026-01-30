@@ -22,15 +22,38 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { useRewardsAudit } from "./hooks.jsx";
+import { fetchRewardsAudit } from "./api.js";
 import { DashboardSkeleton } from "@/components/ui/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 
 const RewardsAndReports = () => {
   const { user, loading: authLoading } = useAuth();
-  const { data, loading } = useRewardsAudit(user?.id);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [localHistory, setLocalHistory] = useState([]);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const result = await fetchRewardsAudit(user.id);
+        if (!mounted) return;
+        setData(result);
+      } catch (err) {
+        console.error('Failed to load rewards audit', err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+    return () => { mounted = false; };
+  }, [user?.id]);
 
   // Show loading while auth is loading or if user is not authenticated
   if (authLoading || !user) {
@@ -48,7 +71,7 @@ const RewardsAndReports = () => {
   // Transform pointsByDepartment to pointsByMetric format for the chart
   const pointsByMetric = (data?.pointsByDepartment || []).map((dept, idx) => ({
     name: dept.department,
-    value: dept.points,
+    value: Number(dept.points) || 0,
     color: [
       "hsl(280, 100%, 60%)", // primary purple
       "hsl(195, 100%, 50%)", // secondary cyan
@@ -57,16 +80,15 @@ const RewardsAndReports = () => {
       "hsl(330, 100%, 60%)", // pink
     ][idx % 5]
   }));
-  const rewardHistory = (data?.rewardHistory || []).map(item => ({
-    avatar: item.guideName ? item.guideName.split(' ').map(n => n[0]).join('') : 'N/A',
-    agent: item.guideName || 'Unknown',
-    reward: item.reward || 'Points',
-    points: item.points || 0,
-    date: item.date || new Date().toLocaleDateString(),
-    status: item.status || 'pending'
-  }));
-
   useEffect(() => {
+    const rewardHistory = (data?.rewardHistory || []).map(item => ({
+      avatar: item.guideName ? item.guideName.split(' ').map(n => n[0]).join('') : 'N/A',
+      agent: item.guideName || 'Unknown',
+      reward: item.reward || 'Points',
+      points: item.points || 0,
+      date: item.date || new Date().toLocaleDateString(),
+      status: item.status || 'pending'
+    }));
     setLocalHistory(rewardHistory);
   }, [data]);
 

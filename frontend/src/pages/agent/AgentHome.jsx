@@ -253,6 +253,13 @@ const AgentHome = () => {
               <span className="font-display font-bold text-foreground">gaMEtrix</span>
               <img src={genpactLogo} alt="Genpact" className="w-20 h-6 object-contain" />
             </div>
+            <div className="ml-4 hidden md:block">
+              <div className="text-xs text-muted-foreground mb-1">Logs</div>
+              <div className="text-sm bg-muted/20 p-2 rounded-md max-w-xs">
+                <div className="text-xs text-muted-foreground">2026-01-28 09:02 - System sync completed</div>
+                <div className="text-xs text-muted-foreground">2026-01-29 14:10 - Rewards inventory updated</div>
+              </div>
+            </div>
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-1" style={{ fontFamily: "'Sora', sans-serif", background: "linear-gradient(135deg, hsl(var(--foreground)) 0%, hsl(var(--primary)) 50%, hsl(var(--secondary)) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 Command Center
