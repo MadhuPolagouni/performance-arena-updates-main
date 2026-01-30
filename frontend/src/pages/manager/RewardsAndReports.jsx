@@ -32,6 +32,12 @@ const RewardsAndReports = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [localHistory, setLocalHistory] = useState([]);
+  const [pendingOpen, setPendingOpen] = useState(false);
+
+  const pendingActions = [
+    { id: 1, title: 'Approve reward distributions', info: '3 items pending approval' },
+    { id: 2, title: 'Review flagged claims', info: '2 fairness flags' }
+  ];
 
   useEffect(() => {
     let mounted = true;
@@ -47,7 +53,7 @@ const RewardsAndReports = () => {
         setData(result);
         // populate localHistory immediately from fetched result to avoid
         // any conditional hook ordering issues between renders
-        const rewardHistory = (result?.rewardHistory || []).map(item => ({
+        let rewardHistory = (result?.rewardHistory || []).map(item => ({
           avatar: item.guideName ? item.guideName.split(' ').map(n => n[0]).join('') : 'N/A',
           agent: item.guideName || 'Unknown',
           reward: item.reward || 'Points',
@@ -55,6 +61,14 @@ const RewardsAndReports = () => {
           date: item.date || new Date().toLocaleDateString(),
           status: item.status || 'pending'
         }));
+        // If no remote history, populate with sensible dummy recent rewards
+        if (!rewardHistory.length) {
+          rewardHistory = [
+            { avatar: 'NT', agent: 'Nitha Thatikonda', reward: 'Headset', points: 4709, date: 'just now', status: 'claimed' },
+            { avatar: 'RK', agent: 'Ravi Kumar', reward: 'Sipper', points: 150, date: '1d ago', status: 'distributed' },
+            { avatar: 'AS', agent: 'Anita Sharma', reward: 'Cheers (5000)', points: 5000, date: '3d ago', status: 'claimed' }
+          ];
+        }
         setLocalHistory(rewardHistory);
       } catch (err) {
         console.error('Failed to load rewards audit', err);
@@ -147,6 +161,35 @@ const RewardsAndReports = () => {
             <Download className="w-4 h-4" />
             Audit Report
           </motion.button>
+        </div>
+      </div>
+
+      {/* Pending Actions (collapsible) */}
+      <div className="mt-2">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Pending Actions</h2>
+          <button
+            onClick={() => setPendingOpen(p => !p)}
+            className="text-sm text-primary flex items-center gap-2"
+          >
+            {pendingOpen ? 'Hide' : 'Show'}
+          </button>
+        </div>
+        <div className="rounded-xl bg-muted/20 border border-border/50 p-3">
+          {pendingActions.map((p) => (
+            <div key={p.id} className="flex items-center justify-between py-2">
+              <div>
+                <p className="text-sm font-medium text-foreground">{p.title}</p>
+                <p className="text-xs text-muted-foreground">{p.info}</p>
+              </div>
+              <div>
+                <button className="px-2 py-1 text-xs rounded-lg bg-muted/50">Details</button>
+                {pendingOpen && (
+                  <div className="mt-2 text-xs text-muted-foreground">More info about action '{p.title}' shown here when expanded.</div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 

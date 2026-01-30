@@ -307,20 +307,20 @@ const ContestWizard = () => {
       case 4:
         return (
           <div className="space-y-6">
-            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Start Date</label>
+                <label className="block text-sm font-medium text-foreground mb-2">Start Date & Time</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   value={formData.startDate}
                   onChange={(e) => updateFormData("startDate", e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">End Date</label>
+                <label className="block text-sm font-medium text-foreground mb-2">End Date & Time</label>
                 <input
-                  type="date"
+                  type="datetime-local"
                   value={formData.endDate}
                   onChange={(e) => updateFormData("endDate", e.target.value)}
                   className="w-full px-4 py-3 rounded-xl bg-muted/30 border border-border/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
@@ -433,6 +433,16 @@ const ContestWizard = () => {
           <div className="space-y-6">
             <div className="p-6 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30">
               <h3 className="text-lg font-bold text-foreground mb-4">Contest Summary</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="px-3 py-2 rounded-lg bg-muted/20 border border-border/50">
+                    <p className="text-xs text-muted-foreground">Qualifiers</p>
+                    <p className="font-semibold">{(formData.qualifiers || []).length}</p>
+                  </div>
+                  <div className="px-3 py-2 rounded-lg bg-muted/20 border border-border/50">
+                    <p className="text-xs text-muted-foreground">Reward Tiers</p>
+                    <p className="font-semibold">{formData.rewards?.length || 0}</p>
+                  </div>
+                </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <p className="text-xs text-muted-foreground uppercase tracking-wider mb-1">Name</p>

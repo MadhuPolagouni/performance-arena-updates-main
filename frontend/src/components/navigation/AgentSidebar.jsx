@@ -21,7 +21,7 @@ const navItems = [
   { path: "/agent/play", icon: Gamepad2, label: "Play Zone" },
   { path: "/agent/performance", icon: TrendingUp, label: "Performance" },
   { path: "/agent/leaderboard", icon: Trophy, label: "Leaderboard" },
-  { path: "/agent/rewards", icon: Gift, label: "Rewards & Achievements" },
+  { path: "/agent/rewards", icon: Gift, label: "Rewards & Achievements", end: true },
   { path: "/agent/rewards-gallery", icon: Medal, label: "Rewards Gallery" },
 ];
 

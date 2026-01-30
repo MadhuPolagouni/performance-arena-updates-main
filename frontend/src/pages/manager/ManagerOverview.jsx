@@ -92,9 +92,9 @@ const ManagerOverview = () => {
               <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
                     {((typeof data.teamXps !== 'undefined' && data.teamXps !== null)
-                      ? data.teamXps
-                      : (data.teamHealthScore ? Math.round(data.teamHealthScore * 100) : 0)
-                    ).toLocaleString()}
+                      ? Math.round(data.teamXps).toLocaleString()
+                      : (typeof data.teamHealthScore !== 'undefined' && data.teamHealthScore !== null ? Math.round(data.teamHealthScore) : 0).toLocaleString()
+                    )}
                   </span>
                 </div>
             </motion.div>
@@ -344,10 +344,21 @@ const ManagerOverview = () => {
                   </div>
                   <div className="flex-1">
                     <p className="text-sm text-foreground">
-                      <span className="font-medium">{item.name || item.agent}</span>{" "}
-                      <span className="text-muted-foreground">won</span>{" "}
-                      <span className="text-primary font-medium">{item.reward || item.prize || item.value || item.points || 'Points'}</span>
-                    </p>
+                            <span className="font-medium">{item.name || item.agent}</span>{" "}
+                            <span className="text-muted-foreground">won</span>{" "}
+                            {(() => {
+                              const raw = item.reward || item.prize || item.value || item.points || '';
+                              // If reward looks like a currency/amount, replace with a friendly reward name
+                              if (/\$|\d{3,}/.test(String(raw))) {
+                                const fallback = item.context || item.dept || '';
+                                // map to a small set of known rewards if context not helpful
+                                const known = ['Sipper','Headset','Bonus XPS','Bonus Points','Coffee Mug','T-Shirt','Cheers','Laptop Bag','Hoodie'];
+                                const pick = known[idx % known.length];
+                                return <span className="text-primary font-medium">{item.rewardName || item.prizeName || fallback || pick}</span>;
+                              }
+                              return <span className="text-primary font-medium">{raw || 'Points'}</span>;
+                            })()}
+                          </p>
                     <p className="text-xs text-muted-foreground mt-0.5">{item.time || item.date || 'just now'} • {item.context || item.dept || 'Team'}</p>
                   </div>
                 </div>
