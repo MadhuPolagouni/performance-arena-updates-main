@@ -8,6 +8,10 @@ import GamifiedBackground from "@/components/effects/GamifiedBackground";
 import vrGamerHero from "@/assets/vr-gamer-hero.png";
 import warriorKnight3d from "@/assets/warrior-knight-3d.png";
 import goldenTrophy3d from "@/assets/golden-trophy-3d.png";
+import genpactLogo from "@/assets/genpact-logo.svg";
+import godaddyLogo from "@/assets/godaddy-logo.svg";
+import ProductionReport from '@/components/ui/ProductionReport';
+import RewardsGallery from '@/components/ui/RewardsGallery';
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -172,6 +176,14 @@ const Landing = () => {
           </motion.button>
         </div>
       </nav>
+
+      {/* Partner Logos */}
+      <div className="relative z-40 container mx-auto px-4 sm:px-6 lg:px-12 mt-3 mb-2 flex items-center justify-end gap-4">
+        <div className="flex items-center gap-3">
+          <img src={genpactLogo} alt="Genpact" className="h-8 opacity-95" />
+          <img src={godaddyLogo} alt="GoDaddy" className="h-8 opacity-95" />
+        </div>
+      </div>
 
       {/* Hero Section */}
       <section className="relative z-10 min-h-[90vh] sm:min-h-[85vh] flex items-center">
@@ -414,6 +426,13 @@ const Landing = () => {
         </div>
       </section>
 
+      {/* Production Report */}
+      <section className="relative z-20 mx-4 sm:mx-6 lg:mx-12 mb-8">
+        <div className="container mx-auto">
+          <ProductionReport mandays={124} guidesProcessed={42} period="This Week" />
+        </div>
+      </section>
+
       {/* Stats Bar */}
       <section className="relative z-20 -mt-8 sm:-mt-12 mx-4 sm:mx-6 lg:mx-12 mb-8 sm:mb-12">
         <motion.div 
@@ -504,6 +523,17 @@ const Landing = () => {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Rewards Gallery */}
+      <section className="relative z-10 py-8 sm:py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-12">
+          <div className="mb-4 text-center">
+            <h3 className="text-lg sm:text-2xl font-display font-bold text-foreground">Rewards Gallery</h3>
+            <p className="text-sm text-muted-foreground">Popular rewards available for guides</p>
+          </div>
+          <RewardsGallery />
         </div>
       </section>
 

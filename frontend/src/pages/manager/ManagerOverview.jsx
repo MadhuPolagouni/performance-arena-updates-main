@@ -75,7 +75,7 @@ const ManagerOverview = () => {
         {/* Left Column */}
         <div className="space-y-6">
           {/* Key Metrics Row */}
-          <div className="grid sm:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-4 gap-4">
             {/* Team Health Score */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -102,6 +102,35 @@ const ManagerOverview = () => {
                   {data.teamHealthChange >= 0 ? '+' : ''}{data.teamHealthChange}%
                 </span>
                 <span className="text-xs text-muted-foreground">vs. previous period</span>
+              </div>
+            </motion.div>
+            
+            {/* Team XPS (includes Team Health adjustment) */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+              className="p-5 rounded-xl glass-card border border-border/50"
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider">Team XPS</span>
+                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-primary" />
+                </div>
+              </div>
+              <div className="flex items-baseline gap-2">
+                {/* Compute teamXps: base + health contribution */}
+                <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
+                  {(() => {
+                    const base = data.teamXps || 0;
+                    const health = typeof data.teamHealthScore === 'number' ? data.teamHealthScore : 0;
+                    const healthBonus = Math.floor(health * 2); // health contributes as multiplier (adjustable)
+                    return (base + healthBonus).toLocaleString();
+                  })()}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="text-xs text-muted-foreground">Includes Team Health bonus</span>
               </div>
             </motion.div>
 
