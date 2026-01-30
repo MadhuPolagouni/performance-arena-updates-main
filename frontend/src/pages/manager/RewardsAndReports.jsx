@@ -209,103 +209,12 @@ const RewardsAndReports = () => {
       </motion.div>
 
       {/* Main Grid */}
-      <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+      <div className="grid  gap-6">
         {/* Left Column */}
         <div className="space-y-6">
-          {/* Key Metrics Row */}
-          <div className="grid md:grid-cols-2 gap-4">
-            {/* Total Points Distributed */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="p-5 rounded-xl glass-card border border-border/50"
-            >
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Total Points Distributed</p>
-              <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
-                  {totalDistributed.toLocaleString()}
-                </span>
-                <span className="px-2 py-0.5 rounded bg-success/20 text-success text-xs font-medium flex items-center gap-1">
-                  <TrendingUp className="w-3 h-3" />
-                  {budgetChange}%
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2">vs. last month (127,200)</p>
-              <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden mt-4">
-                <div className="h-full bg-secondary rounded-full" style={{ width: "78%" }} />
-              </div>
-            </motion.div>
-
-            {/* Remaining Reward Budget */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="p-5 rounded-xl glass-card border border-border/50"
-            >
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Remaining Reward Budget</p>
-              <div className="flex items-baseline gap-3">
-                <span className="text-4xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
-                  ${remainingBudget.toLocaleString()}
-                </span>
-                <span className="text-lg text-muted-foreground">.00</span>
-                <span className="px-2 py-0.5 rounded bg-warning/20 text-warning text-xs font-medium flex items-center gap-1">
-                  <AlertTriangle className="w-3 h-3" />
-                  Low
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2">Allocated: ${totalBudget.toLocaleString()} Total</p>
-              <div className="h-1.5 bg-muted/50 rounded-full overflow-hidden mt-4">
-                <div
-                  className="h-full bg-success rounded-full"
-                  style={{ width: `${100 - budgetUsedPercent}%` }}
-                />
-              </div>
-            </motion.div>
-          </div>
-
+          
           {/* Points by Metric Chart */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="p-6 rounded-xl glass-card border border-border/50"
-          >
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground">Points Earned by Metric</h3>
-                <p className="text-sm text-muted-foreground">Distribution of points across different KPI categories</p>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Info className="w-4 h-4 text-secondary" />
-                <span>Revenue drives 40% of total points</span>
-              </div>
-            </div>
-
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={pointsByMetric} layout="vertical" barSize={24}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
-                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} width={80} />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "8px",
-                    }}
-                    formatter={(value) => [`${value.toLocaleString()} pts`, "Points"]}
-                  />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                    {pointsByMetric.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
+          
           {/* Detailed Reward History */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -344,7 +253,7 @@ const RewardsAndReports = () => {
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Guide</div>
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Reward Won</div>
                 <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">Date</div>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">Context</div>
+                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider text-center">Contest</div>
               </div>
 
               <div className="divide-y divide-border/50">
@@ -390,74 +299,51 @@ const RewardsAndReports = () => {
               </div>
             </div>
           </motion.div>
+        
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-6 rounded-xl glass-card border border-border/50"
+          >
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Points Earned by Metric</h3>
+                <p className="text-sm text-muted-foreground">Distribution of points across different KPI categories</p>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Info className="w-4 h-4 text-secondary" />
+                <span>Revenue drives 40% of total points</span>
+              </div>
+            </div>
+
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={pointsByMetric} layout="vertical" barSize={24}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={true} vertical={false} />
+                  <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} tickLine={false} axisLine={false} width={80} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--card))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: "8px",
+                    }}
+                    formatter={(value) => [`${value.toLocaleString()} pts`, "Points"]}
+                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                    {pointsByMetric.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </motion.div>
+
         </div>
 
-        {/* Right Column - Actions & Feed */}
-        <div className="space-y-6">
-          {/* Audit Actions */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Audit Actions</h3>
-
-            <button className="w-full p-4 rounded-xl glass-card border border-border/50 hover:border-primary/50 transition-colors text-left flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
-                <Settings className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground text-sm">Adjust Point Logic</p>
-                <p className="text-xs text-muted-foreground mt-0.5">Modify how points are earned.</p>
-              </div>
-            </button>
-
-            <button className="w-full p-4 rounded-xl glass-card border border-border/50 hover:border-warning/50 transition-colors text-left flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg bg-warning/20 flex items-center justify-center shrink-0">
-                <Flag className="w-5 h-5 text-warning" />
-              </div>
-              <div>
-                <p className="font-medium text-foreground text-sm">Review Flags</p>
-                <p className="text-xs text-muted-foreground mt-0.5">3 fairness alerts pending.</p>
-              </div>
-            </button>
-          </div>
-
-          {/* Live Redemptions */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Live Redemptions</h3>
-              <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            </div>
-            <div className="space-y-3">
-              {liveRedemptions.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs">
-                    {item.avatar}
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm text-foreground">
-                      <span className="font-medium">{item.name}</span>{" "}
-                      <span className="text-muted-foreground">{item.action}</span>{" "}
-                      {item.value && <span className="text-primary font-medium">{item.value}</span>}
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{item.time}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Fairness Check */}
-          <div className="p-4 rounded-xl bg-gradient-to-br from-accent/20 to-warning/20 border border-accent/30">
-            <div className="flex items-center gap-2 mb-2">
-              <AlertTriangle className="w-4 h-4 text-accent" />
-              <span className="text-sm font-semibold text-foreground">Fairness Check</span>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
-              {fairnessAlert || "Top 10% of performers are claiming 60% of rewards. Consider adjusting tiers."}
-            </p>
-            <button className="w-full py-2 rounded-lg bg-secondary text-secondary-foreground text-sm font-medium hover:bg-secondary/90 transition-colors">
-              Review Tiers
-            </button>
-          </div>
-        </div>
+        
       </div>
     </div>
   );

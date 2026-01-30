@@ -573,7 +573,6 @@ const Leaderboard = () => {
                   <th className="text-left p-3 lg:p-4 text-[10px] font-oxanium text-muted-foreground uppercase tracking-widest">WARRIOR</th>
                   <th className="text-left p-3 lg:p-4 text-[10px] font-oxanium text-muted-foreground uppercase tracking-widest hidden md:table-cell">TIER</th>
                   <th className="text-right p-3 lg:p-4 text-[10px] font-oxanium text-muted-foreground uppercase tracking-widest">POWER</th>
-                  <th className="text-right p-3 lg:p-4 text-[10px] font-oxanium text-muted-foreground uppercase tracking-widest hidden sm:table-cell">GAP</th>
                 </tr>
               </thead>
               <tbody>
@@ -636,25 +635,13 @@ const Leaderboard = () => {
                           {player.xp || pointsToXP(player.points)} XP
                         </span>
                       </td>
-                      <td className="p-3 lg:p-4 text-right hidden sm:table-cell">
-                        <div className="flex items-center justify-end gap-2">
-                          <span className="text-xs text-warning font-mono">-{player.gap}</span>
-                          {/* Power Distance Bar */}
-                          <div className="w-12 h-1.5 bg-muted/30 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-gradient-to-r from-warning to-destructive rounded-full"
-                              style={{ width: `${Math.min((player.gap / 200) * 100, 100)}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
                     </motion.tr>
                   );
                 })}
 
                 {/* Separator */}
                 <tr>
-                  <td colSpan={5} className="py-2 text-center">
+                  <td colSpan={4} className="py-2 text-center">
                     <div className="flex items-center justify-center gap-2 text-muted-foreground">
                       <div className="w-8 h-px bg-border/50" />
                       <span className="text-xs font-oxanium tracking-widest">YOUR POSITION</span>
@@ -697,9 +684,6 @@ const Leaderboard = () => {
                   </td>
                   <td className="p-3 lg:p-4 text-right">
                     <span className="font-display font-bold text-primary text-lg">{data.currentUser.xp || pointsToXP(data.currentUser.points)} XP</span>
-                  </td>
-                  <td className="p-3 lg:p-4 text-right hidden sm:table-cell">
-                    <span className="text-xs text-secondary font-mono">-{data.currentUser.gap} XP</span>
                   </td>
                 </motion.tr>
               </tbody>

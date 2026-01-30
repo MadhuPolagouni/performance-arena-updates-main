@@ -848,7 +848,7 @@ const AgentHome = () => {
                     {data.leaderboard[1].avatar}
                   </div>
                   <span className="text-xs text-muted-foreground mt-1 font-medium">{data.leaderboard[1].name}</span>
-                  <span className="text-xs text-muted-foreground">{data.leaderboard[1].points.toLocaleString()}</span>
+                  <span className="text-xs text-muted-foreground">{Math.floor((data.leaderboard[1].points || 0) / 10).toLocaleString()} XPS</span>
                   <div className="w-14 h-14 mt-2 rounded-t-lg bg-gradient-to-b from-gray-400/40 to-gray-600/40 flex items-center justify-center text-2xl font-bold text-gray-400 border-t border-x border-gray-400/30">2</div>
                 </motion.div>
               )}
@@ -862,7 +862,7 @@ const AgentHome = () => {
                     <div className="absolute -top-2 left-1/2 -translate-x-1/2"><span className="text-xl">👑</span></div>
                   </div>
                   <span className="text-sm font-semibold text-accent mt-2">{data.leaderboard[0].name}</span>
-                  <span className="text-xs text-accent">{data.leaderboard[0].points.toLocaleString()}</span>
+                  <span className="text-xs text-accent">{Math.floor((data.leaderboard[0].points || 0) / 10).toLocaleString()} XPS</span>
                   <div className="w-16 h-20 mt-2 rounded-t-lg bg-gradient-to-b from-yellow-500/40 to-yellow-700/40 flex items-center justify-center text-3xl font-bold text-accent border-t border-x border-yellow-500/40">1</div>
                 </motion.div>
               )}
@@ -873,7 +873,7 @@ const AgentHome = () => {
                     {data.leaderboard[2].avatar}
                   </div>
                   <span className="text-xs text-muted-foreground mt-1 font-medium">{data.leaderboard[2].name}</span>
-                  <span className="text-xs text-muted-foreground">{data.leaderboard[2].points.toLocaleString()}</span>
+                  <span className="text-xs text-muted-foreground">{Math.floor((data.leaderboard[2].points || 0) / 10).toLocaleString()} XPS</span>
                   <div className="w-14 h-10 mt-2 rounded-t-lg bg-gradient-to-b from-amber-600/40 to-amber-800/40 flex items-center justify-center text-2xl font-bold text-amber-500 border-t border-x border-amber-600/30">3</div>
                 </motion.div>
               )}
@@ -897,7 +897,7 @@ const AgentHome = () => {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-lg text-primary">{data.currentUser.points.toLocaleString()} pts</p>
+                  <p className="font-bold text-lg text-primary">{Math.floor((data.currentUser.points || 0) / 10).toLocaleString()} XPS</p>
                   <p className="text-xs text-success flex items-center justify-end gap-1">
                     <TrendingUp className="w-3 h-3" /> Climbing!
                   </p>

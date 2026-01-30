@@ -32,6 +32,35 @@ import { cn } from "../../lib/utils";
 import { useAchievements, useRewardsVault } from "./hooks.jsx";
 import { DashboardSkeleton } from "../../components/ui/PageSkeleton";
 
+// Helper function to normalize reward names to simple 9-item list
+const normalizeRewardName = (name) => {
+  if (!name) return "Unknown Reward";
+  
+  const lowerName = name.toLowerCase();
+  
+  // Map variations of reward names to the 9 simple names
+  const rewardMap = {
+    'sipper': ['sipper', 'sip', 'beverage', 'water bottle'],
+    'headset': ['headset', 'earphone', 'audio', 'speaker', 'headphone'],
+    'bonus xps': ['bonus xps', 'bonus xp', 'xp boost', 'xps boost'],
+    'bonus points': ['bonus points', 'bonus pts', 'points boost', 'pts boost'],
+    'coffee mug': ['coffee mug', 'mug', 'cup', 'coffee', 'coffee cup'],
+    't-shirt': ['t-shirt', 'tshirt', 'shirt', 'apparel', 'clothing'],
+    'cheers': ['cheers', 'celebration', 'congrats', 'toast'],
+    'laptop bag': ['laptop bag', 'laptop case', 'laptop', 'bag', 'case'],
+    'hoodie': ['hoodie', 'sweatshirt', 'jacket', 'outerwear', 'fleece']
+  };
+  
+  for (const [simpleName, variations] of Object.entries(rewardMap)) {
+    if (variations.some(v => lowerName.includes(v))) {
+      return simpleName;
+    }
+  }
+  
+  // Fallback to first few words if no match
+  return name.split(' ').slice(0, 2).join(' ');
+};
+
 const RewardsAndAchievements = () => {
   const { data: achievementsData, loading: achievementsLoading } = useAchievements();
   const { data: rewardsData, loading: rewardsLoading, actions } = useRewardsVault();
@@ -716,7 +745,7 @@ const RewardsAndAchievements = () => {
                           <div className="text-4xl mb-3">{reward.image || '🎁'}</div>
                           
                           {/* Title */}
-                          <h4 className="font-bold text-white text-base mb-2">{reward.title}</h4>
+                          <h4 className="font-bold text-white text-base mb-2">{normalizeRewardName(reward.title)}</h4>
                           
                           {/* Points */}
                           <div className="flex items-center gap-1 text-accent mb-2">
@@ -784,7 +813,7 @@ const RewardsAndAchievements = () => {
                           </motion.div>
                           
                           {/* Title */}
-                          <h4 className="font-bold text-white text-base mb-2">{reward.title}</h4>
+                          <h4 className="font-bold text-white text-base mb-2">{normalizeRewardName(reward.title)}</h4>
                           
                           {/* Points */}
                           <div className="flex items-center gap-1 text-primary mb-2">
@@ -938,7 +967,7 @@ const RewardsAndAchievements = () => {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">normalizeRewardName(card.name)
               {/* Scratch Card History */}
               {(rewardsData?.scratchCards || []).filter(c => c.status !== "pending").map((card, idx) => (
                 <motion.div
@@ -981,7 +1010,7 @@ const RewardsAndAchievements = () => {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + idx * 0.03 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05 }}normalizeRewardName(win.reward)
                   className="relative h-32 rounded-xl border border-purple-400/30 overflow-hidden cursor-pointer group"
                   style={{
                     background: "linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)",

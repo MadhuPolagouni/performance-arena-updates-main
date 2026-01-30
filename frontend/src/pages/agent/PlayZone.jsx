@@ -177,7 +177,9 @@ const PlayZone = () => {
   const transformedWeeklyChallenges = weeklyChallenges.map(challenge => ({
     id: challenge.id,
     title: challenge.title,
-    description: `${challenge.title}: ${challenge.value} / ${challenge.target}`,
+    description: challenge.value !== undefined && challenge.target !== undefined 
+      ? `${challenge.title}: ${challenge.value} / ${challenge.target}`
+      : "Challenge Locked",
     tokens: challenge.reward,
     icon: Target, // or based on type
     metric: challenge.title.split(' ')[0], // e.g., "NRPC"

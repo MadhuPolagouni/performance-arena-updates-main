@@ -128,30 +128,6 @@ const ManagerOverview = () => {
                 <span className="text-xs text-muted-foreground">vs. previous period</span>
               </div>
             </motion.div>
-
-            {/* Points Budget */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="p-5 rounded-xl glass-card border border-border/50"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-xs text-muted-foreground uppercase tracking-wider">Points Budget</span>
-                <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center">
-                  <Gift className="w-4 h-4 text-accent" />
-                </div>
-              </div>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>{data.pointsBudget.toLocaleString()}</span>
-              </div>
-              <div className="flex items-center gap-2 mt-2">
-                <div className="px-2 py-0.5 rounded bg-secondary/20 text-secondary text-xs font-medium">
-                  {data.pointsRemaining} pts
-                </div>
-                <span className="text-xs text-muted-foreground">remaining this month</span>
-              </div>
-            </motion.div>
           </div>
 
           {/* Productivity Trend Chart */}
@@ -298,33 +274,6 @@ const ManagerOverview = () => {
 
         {/* Right Column - Actions & Feed */}
         <div className="space-y-6">
-          {/* Quick Actions */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
-          >
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Quick Actions</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <button className="p-4 rounded-xl glass-card border border-border/50 hover:border-primary/50 transition-colors text-center group">
-                <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-primary/20 flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                  <Zap className="w-5 h-5 text-primary" />
-                </div>
-                <span className="text-sm font-medium text-foreground">Launch Contest</span>
-              </button>
-              <button className="p-4 rounded-xl glass-card border border-border/50 hover:border-success/50 transition-colors text-center group">
-                <div className="w-10 h-10 mx-auto mb-2 rounded-lg bg-success/20 flex items-center justify-center group-hover:bg-success/30 transition-colors">
-                  <MessageSquare className="w-5 h-5 text-success" />
-                </div>
-                <span className="text-sm font-medium text-foreground">Send Cheers</span>
-              </button>
-            </div>
-            <button className="w-full p-4 rounded-xl glass-card border border-border/50 hover:border-secondary/50 transition-colors flex items-center justify-center gap-2 group">
-              <Trophy className="w-5 h-5 text-secondary" />
-              <span className="text-sm font-medium text-foreground">Create Task</span>
-            </button>
-          </motion.div>
-
           {/* Live Feed */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
