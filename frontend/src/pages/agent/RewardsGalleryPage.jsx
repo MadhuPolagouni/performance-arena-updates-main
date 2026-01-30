@@ -1,14 +1,14 @@
 import React from 'react';
 import RewardsGallery from '@/components/ui/RewardsGallery';
 
-import cup from '@/assets/cup.png';
-import cup1 from '@/assets/cup1.png';
-import mysterybox from '@/assets/mysterybox.png';
-import mysterybox1 from '@/assets/mysterybox1.png';
-import techOrb from '@/assets/tech-data-orb.png';
-import avatar1 from '@/assets/warrior-avatar-1.png';
-import avatar2 from '@/assets/warrior-avatar-2.png';
-import shield from '@/assets/shield.png';
+import cheersPoints from '@/assets/rewardsimgs/cheers-points.png';
+import coffeeMug from '@/assets/rewardsimgs/coffee-mug.png';
+import headset from '@/assets/rewardsimgs/headset.png';
+import hoodie from '@/assets/rewardsimgs/hoodie.png';
+import laptopBag from '@/assets/rewardsimgs/laptop-bag.png';
+import points from '@/assets/rewardsimgs/points.png';
+import tShirt from '@/assets/rewardsimgs/t-shirt.png';
+import xps from '@/assets/rewardsimgs/xps.png';
 
 const sampleRewards = [
   { id: 'sipper', name: 'Sipper', key: 'sipper' },
@@ -23,15 +23,15 @@ const sampleRewards = [
 ];
 
 const images = {
-  'sipper': cup1,
-  'headset': avatar2,
-  'bonus-xps': mysterybox,
-  'bonus-points': techOrb,
-  'coffee-mug': cup,
-  't-shirt': avatar1,
-  'cheers': mysterybox1,
-  'laptop-bag': mysterybox,
-  'hoodie': shield,
+  'sipper': coffeeMug,
+  'headset': headset,
+  'bonus-xps': xps,
+  'bonus-points': points,
+  'coffee-mug': coffeeMug,
+  't-shirt': tShirt,
+  'cheers': cheersPoints,
+  'laptop-bag': laptopBag,
+  'hoodie': hoodie,
 };
 
 const RewardsGalleryPage = () => {
