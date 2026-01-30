@@ -73,7 +73,7 @@ const Router = () => {
       {/* Manager Routes */}
       <Route path="/manager" element={<ManagerLayout />}>
         <Route index element={<ManagerOverview />} />
-        <Route path="performance" element={<TeamPerformance />} />
+        <Route path="performance" element={<ManagerLeaderboard />} />
         <Route path="contests" element={<ContestManagement />} />
         <Route path="rewards" element={<RewardsAudit />} />
         <Route path="reports" element={<Reports />} />

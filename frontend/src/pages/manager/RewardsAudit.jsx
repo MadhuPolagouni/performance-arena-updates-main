@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Download,
@@ -26,10 +26,11 @@ import { useRewardsAudit } from "./hooks.jsx";
 import { DashboardSkeleton } from "@/components/ui/PageSkeleton";
 import { useAuth } from "@/contexts/AuthContext";
 
-const RewardsAudit = () => {
+const RewardsAndReports = () => {
   const { user, loading: authLoading } = useAuth();
   const { data, loading } = useRewardsAudit(user?.id);
   const [searchQuery, setSearchQuery] = useState("");
+  const [localHistory, setLocalHistory] = useState([]);
 
   // Show loading while auth is loading or if user is not authenticated
   if (authLoading || !user) {
@@ -64,6 +65,33 @@ const RewardsAudit = () => {
     date: item.date || new Date().toLocaleDateString(),
     status: item.status || 'pending'
   }));
+
+  useEffect(() => {
+    setLocalHistory(rewardHistory);
+  }, [data]);
+
+  const handleMarkDistributed = (idx) => {
+    setLocalHistory(prev => {
+      const copy = [...prev];
+      copy[idx] = { ...copy[idx], status: 'distributed' };
+      return copy;
+    });
+  };
+
+  const exportCSV = () => {
+    const rows = [
+      ['Agent','Reward','Points','Date','Status'],
+      ...localHistory.map(r => [r.agent, r.reward, r.points, r.date, r.status])
+    ];
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'rewards_audit.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
   const liveRedemptions = data?.liveRedemptions || [];
   const fairnessAlert = data?.fairnessAlert;
 
@@ -75,7 +103,7 @@ const RewardsAudit = () => {
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-bold text-foreground" style={{ fontFamily: "'Sora', sans-serif" }}>
-            Rewards & Points Audit
+            Rewards and Reports
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             Track distribution fairness and budget allocation for <span className="text-foreground font-medium">Oct 2023</span>
@@ -89,6 +117,7 @@ const RewardsAudit = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={exportCSV}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-primary-foreground"
             style={{
               background: "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(330 100% 50%) 100%)",
@@ -241,7 +270,7 @@ const RewardsAudit = () => {
               </div>
 
               <div className="divide-y divide-border/50">
-                {rewardHistory
+                {localHistory
                   .filter(item => item.agent.toLowerCase().includes(searchQuery.toLowerCase()))
                   .map((item, idx) => (
                   <div key={idx} className="grid grid-cols-5 gap-4 p-4 hover:bg-muted/30 transition-colors">
@@ -260,12 +289,20 @@ const RewardsAudit = () => {
                     <div className="flex items-center justify-center">
                       <span className="text-sm text-muted-foreground">{item.date}</span>
                     </div>
-                    <div className="flex items-center justify-center">
+                    <div className="flex items-center justify-center gap-2">
                       <span className={`px-2 py-1 rounded-lg text-xs font-medium capitalize ${
-                        item.status === "claimed" ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
+                        item.status === "distributed" ? "bg-success/20 text-success" : item.status === "claimed" ? "bg-success/20 text-success" : "bg-warning/20 text-warning"
                       }`}>
                         {item.status}
                       </span>
+                      {item.status !== 'distributed' && (
+                        <button
+                          onClick={() => handleMarkDistributed(idx)}
+                          className="ml-2 px-2 py-1 text-xs rounded-lg bg-primary/20 text-primary hover:bg-primary/30"
+                        >
+                          Mark Distributed
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -345,4 +382,4 @@ const RewardsAudit = () => {
   );
 };
 
-export default RewardsAudit;
+export default RewardsAndReports;

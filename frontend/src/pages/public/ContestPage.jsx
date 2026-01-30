@@ -59,6 +59,13 @@ const ContestPage = () => {
         },
       ],
       participants: 145,
+      liveActivity: {
+        revenueAchieved: 8200,
+        revenueTarget: 10000,
+        nrpcIncrease: 12, // percent
+        newConvBefore: 8,
+        newConvAfter: 14,
+      },
       leaderboard: [
         {
           rank: 1,
@@ -242,6 +249,30 @@ const ContestPage = () => {
                     <div className="absolute inset-0 opacity-10">
                       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(255,255,255,0.2),transparent)]" />
                     </div>
+
+                    {/* Live Activity */}
+                    {contest.status === 'live' && (
+                      <div>
+                        <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+                          <Clock className="w-5 h-5 text-primary" />
+                          Live Activity
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="p-4 rounded-lg bg-muted/20">
+                            <p className="text-xs text-muted-foreground">Revenue Achieved</p>
+                            <p className="font-bold text-foreground mt-1">${contest.liveActivity.revenueAchieved.toLocaleString()} / ${contest.liveActivity.revenueTarget.toLocaleString()}</p>
+                          </div>
+                          <div className="p-4 rounded-lg bg-muted/20">
+                            <p className="text-xs text-muted-foreground">NRPC Increase</p>
+                            <p className="font-bold text-foreground mt-1">+{contest.liveActivity.nrpcIncrease}% vs baseline</p>
+                          </div>
+                          <div className="p-4 rounded-lg bg-muted/20">
+                            <p className="text-xs text-muted-foreground">New Conv % Change</p>
+                            <p className="font-bold text-foreground mt-1">{contest.liveActivity.newConvBefore}% → {contest.liveActivity.newConvAfter}%</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="relative flex items-start justify-between mb-4">
                       <div>
@@ -475,6 +506,43 @@ const ContestPage = () => {
           })}
         </div>
 
+        {/* Past Contests History */}
+        <section className="pt-10">
+          <h2 className="text-2xl font-bold text-foreground mb-4">Past Contests History</h2>
+          <div className="grid gap-4">
+            {[
+              { id: 'p1', contest: 'January Revenue Drive', winners: [
+                { name: 'Nitha Thatikonda', reward: 'Headset' },
+                { name: 'Ravi Kumar', reward: 'Sipper' },
+                { name: 'Anita Sharma', reward: 'Cheers (5000)' }
+              ]},
+              { id: 'p2', contest: 'Holiday Sprint', winners: [
+                { name: 'Siddharth Rao', reward: 'T-Shirt' },
+                { name: 'Meera Patel', reward: 'Coffee Mug' }
+              ]}
+            ].map((pc) => (
+              <div key={pc.id} className="p-4 rounded-lg bg-muted/20 border border-border/30">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="font-semibold text-foreground">{pc.contest}</p>
+                    <p className="text-xs text-muted-foreground">Summary of rewards distributed</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {pc.winners.map((w, i) => (
+                    <div key={i} className="flex items-center gap-3 p-2 rounded-lg bg-muted/10">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center text-white font-bold">{w.name.split(' ').map(n=>n[0]).join('')}</div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">{w.name}</p>
+                        <p className="text-xs text-muted-foreground">Won: {w.reward}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
         {/* No Contests Message */}
         {activeContests.length === 0 && (
           <motion.div

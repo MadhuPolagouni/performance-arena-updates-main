@@ -390,6 +390,36 @@ const ManagerOverview = () => {
             </div>
           </motion.div>
 
+            {/* Team Rewards Feed */}
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.15 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Team Rewards</h3>
+                <button className="text-xs text-primary hover:underline">View All</button>
+              </div>
+              <div className="space-y-3">
+                {((data.teamRewards && data.teamRewards.length) ? data.teamRewards : [
+                  { name: 'Nitha Thatikonda', reward: 'Headset', time: '2h ago', context: 'Q1 Drive' },
+                  { name: 'Ravi Kumar', reward: 'Sipper', time: '1d ago', context: 'Daily Spins' },
+                  { name: 'Anita Sharma', reward: 'Cheers (5000)', time: '3d ago', context: 'Monthly Sprint' }
+                ]).map((r, idx) => (
+                  <div key={idx} className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-pink-500 flex items-center justify-center text-white font-bold text-sm">
+                      {r.name.split(' ').map(n=>n[0]).join('')}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm text-foreground"><span className="font-medium">{r.name}</span> <span className="text-muted-foreground">won</span> <span className="text-primary font-semibold">{r.reward}</span></p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{r.time} • {r.context}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
           {/* Manager Insight */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
